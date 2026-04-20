@@ -1,4 +1,5 @@
 import React, {useState, memo} from 'react'
+import { apiPath } from '../utils/api'
 
 export default memo(function JobMatch({resumeText=''}) {
   const [job, setJob] = useState('')
@@ -11,7 +12,7 @@ export default memo(function JobMatch({resumeText=''}) {
     }
     setResult(null) // Clear previous result
     try {
-      const response = await fetch('/api/match-job', {
+      const response = await fetch(apiPath('/api/match-job'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

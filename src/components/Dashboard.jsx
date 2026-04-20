@@ -4,6 +4,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import JobSuggestions from './JobSuggestions'
 import jobs from '../data/jobs.json'
 import { suggestJobs } from '../utils/suggestJobs'
+import { apiPath } from '../utils/api'
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 export default function Dashboard({analysis, resumeText=''}){
@@ -19,10 +20,7 @@ export default function Dashboard({analysis, resumeText=''}){
   const fetchJobSuggestions = async () => {
     setLoadingJobs(true)
     try {
-      const response = await fetch('/api/suggest-jobs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+        const response = await fetch(apiPath('/api/suggest-jobs'), {
         },
         body: JSON.stringify({
           candidateSkills: analysis.skills,

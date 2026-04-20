@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard'
 import Suggestions from './components/Suggestions'
 import JobMatch from './components/JobMatch'
 import { analyzeResume } from './utils/analysis'
+import { apiPath } from './utils/api'
 
 export default function App(){
   const [resume, setResume] = useState(null)
@@ -22,7 +23,7 @@ export default function App(){
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch('/api/analyze-resume', {
+      const response = await fetch(apiPath('/api/analyze-resume'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
