@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "title": "Frontend Engineer",
+    "company": "NextWave Labs",
+    "domain": "technical",
+    "experience_level": "mid",
+    "requiredSkills": ["React", "TypeScript", "CSS", "HTML", "Tailwind CSS"],
+    "keywords": ["frontend", "web development", "javascript", "ui"],
+    "portalUrl": "https://www.naukri.com/frontend-engineer-jobs"
+  },
+  {
+    "id": 2,
+    "title": "UI/UX Developer",
+    "company": "BrightSide Studios",
+    "domain": "technical",
+    "experience_level": "mid",
+    "requiredSkills": ["UI/UX", "Figma", "React", "CSS"],
+    "keywords": ["design", "user experience", "prototyping", "adobe"],
+    "portalUrl": "https://www.linkedin.com/jobs/search/?keywords=UI%2FUX+Developer"
+  },
+  {
+    "id": 3,
+    "title": "Full Stack Developer",
+    "company": "CloudRoute",
+    "domain": "technical",
+    "experience_level": "mid",
+    "requiredSkills": ["JavaScript", "React", "Node.js", "APIs", "MongoDB"],
+    "keywords": ["fullstack", "backend", "database", "api development"],
+    "portalUrl": "https://www.naukri.com/full-stack-developer-jobs"
+  },
+  {
+    "id": 4,
+    "title": "Junior Frontend Developer",
+    "company": "LaunchPad Co.",
+    "domain": "technical",
+    "experience_level": "entry",
+    "requiredSkills": ["HTML", "CSS", "JavaScript", "React"],
+    "keywords": ["junior", "entry level", "web development", "frontend"],
+    "portalUrl": "https://www.linkedin.com/jobs/search/?keywords=Junior+Frontend+Developer"
+  },
+  {
+    "id": 5,
+    "title": "Financial Analyst",
+    "company": "Capital Bridge",
+    "domain": "finance",
+    "experience_level": "mid",
+    "requiredSkills": ["Financial Analysis", "Excel", "P&L", "Forecasting", "SAP"],
+    "keywords": ["finance", "analysis", "budgeting", "reporting"],
+    "portalUrl": "https://www.naukri.com/financial-analyst-jobs"
+  },
+  {
+    "id": 6,
+    "title": "Audit Associate",
+    "company": "Apex Accounting",
+    "domain": "finance",
+    "experience_level": "entry",
+    "requiredSkills": ["Audit", "Compliance", "IFRS", "Risk Assessment"],
+    "keywords": ["audit", "accounting", "compliance", "risk management"],
+    "portalUrl": "https://www.linkedin.com/jobs/search/?keywords=Audit+Associate"
+  },
+  {
+    "id": 7,
+    "title": "HR Coordinator",
+    "company": "PeopleWorks",
+    "domain": "hr",
+    "experience_level": "entry",
+    "requiredSkills": ["Recruitment", "Onboarding", "Employee Relations", "HRIS"],
+    "keywords": ["human resources", "recruitment", "onboarding", "employee engagement"],
+    "portalUrl": "https://www.naukri.com/hr-coordinator-jobs"
+  },
+  {
+    "id": 8,
+    "title": "Operations Executive",
+    "company": "LogiChain",
+    "domain": "operations",
+    "experience_level": "mid",
+    "requiredSkills": ["Logistics", "Supply Chain", "Process Improvement", "ERP"],
+    "keywords": ["operations", "logistics", "supply chain", "process optimization"],
+    "portalUrl": "https://www.linkedin.com/jobs/search/?keywords=Operations+Executive"
+  }
+]
