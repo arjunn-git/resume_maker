@@ -263,14 +263,14 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
   ]
 
   return (
-    <div className="bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-700/60 rounded-3xl shadow-xl overflow-hidden flex flex-col h-[780px]">
-      <div className="p-4 border-b border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-purple-50/30 dark:from-slate-900 dark:via-indigo-950/20 dark:to-purple-950/20">
+    <div className="bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-700/60 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[580px] md:h-[780px]">
+      <div className="p-3.5 sm:p-4 border-b border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-purple-50/30 dark:from-slate-900 dark:via-indigo-950/20 dark:to-purple-950/20">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">⚡</span>
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span className="p-1 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">⚡</span>
             Live Dynamic Resume Studio
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
             Real-time ATS synchronization & inline AI assistance
           </p>
         </div>
@@ -278,7 +278,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
         <button
           onClick={onAutoOptimize}
           disabled={isOptimizing}
-          className="relative group px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-md shadow-indigo-500/25 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 flex items-center gap-2"
+          className="relative group px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-md shadow-indigo-500/25 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 flex items-center gap-1.5 sm:gap-2"
         >
           <Sparkles className="w-3.5 h-3.5 animate-spin-slow" />
           {isOptimizing ? 'Optimizing with AI...' : 'Auto-Fix ATS Issues (One-Click)'}
@@ -286,7 +286,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
       </div>
 
       {/* Tabs bar */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 px-3 bg-slate-50/70 dark:bg-slate-950/40 overflow-x-auto">
+      <div className="flex border-b border-slate-200 dark:border-slate-800 px-2 sm:px-3 bg-slate-50/70 dark:bg-slate-950/40 overflow-x-auto scrollbar-none touch-pan-x">
         {tabs.map(tab => {
           const Icon = tab.icon
           const isActive = activeTab === tab.id
@@ -294,20 +294,20 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-3 text-xs font-semibold border-b-2 transition-all whitespace-nowrap ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-2.5 sm:py-3 text-xs font-semibold border-b-2 transition-all whitespace-nowrap shrink-0 ${
                 isActive
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-slate-900/60'
                   : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               {tab.label}
             </button>
           )
         })}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-6">
+      <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 space-y-4 sm:space-y-6 touch-pan-y">
         {/* TAB 1: WORK EXPERIENCE */}
         {activeTab === 'experience' && (
           <div className="space-y-6">

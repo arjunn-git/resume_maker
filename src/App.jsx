@@ -172,47 +172,47 @@ export default function App() {
         {resumeData && analysis && (
           <div className="space-y-6">
             {/* View Mode Switcher */}
-            <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-slate-200/80 dark:border-indigo-500/20 shadow-xl shadow-indigo-500/5 print:hidden">
-              <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 p-2 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-slate-200/80 dark:border-indigo-500/20 shadow-xl shadow-indigo-500/5 print:hidden">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none touch-pan-x w-full sm:w-auto">
                 <button
                   onClick={() => setActiveView('studio')}
-                  className={`px-4 py-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap shrink-0 transition-all duration-200 ${
                     activeView === 'studio'
                       ? 'bg-gradient-to-r from-cyan-500 via-indigo-600 to-fuchsia-600 text-white shadow-md shadow-indigo-500/30 scale-[1.02]'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
                   }`}
                 >
-                  ⚡ Live 3D Studio (Split-Pane)
+                  ⚡ Live 3D Studio
                 </button>
                 <button
                   onClick={() => setActiveView('preview')}
-                  className={`px-4 py-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap shrink-0 transition-all duration-200 ${
                     activeView === 'preview'
                       ? 'bg-gradient-to-r from-cyan-500 via-indigo-600 to-fuchsia-600 text-white shadow-md shadow-indigo-500/30 scale-[1.02]'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
                   }`}
                 >
-                  📄 ATS Document Preview
+                  📄 Document Preview
                 </button>
                 <button
                   onClick={() => setActiveView('audit')}
-                  className={`px-4 py-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap shrink-0 transition-all duration-200 ${
                     activeView === 'audit'
                       ? 'bg-gradient-to-r from-cyan-500 via-indigo-600 to-fuchsia-600 text-white shadow-md shadow-indigo-500/30 scale-[1.02]'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
                   }`}
                 >
-                  🔍 ATS Score Breakdown ({analysis.score}%)
+                  🔍 ATS Score ({analysis.score}%)
                 </button>
                 <button
                   onClick={() => setActiveView('jobmatch')}
-                  className={`px-4 py-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap shrink-0 transition-all duration-200 ${
                     activeView === 'jobmatch'
                       ? 'bg-gradient-to-r from-cyan-500 via-indigo-600 to-fuchsia-600 text-white shadow-md shadow-indigo-500/30 scale-[1.02]'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
                   }`}
                 >
-                  🎯 Job Match & Tailor
+                  🎯 Job Tailor
                 </button>
               </div>
 
