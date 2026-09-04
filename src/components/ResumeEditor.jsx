@@ -229,6 +229,28 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
     })
   }
 
+  // --- Education Handlers ---
+  const addEducation = () => {
+    const newEdu = {
+      degree: 'Degree or Diploma Name',
+      school: 'College or University Name',
+      field: 'Field of Study / Major',
+      graduationYear: `${new Date().getFullYear()}`
+    }
+    onChange({
+      ...resumeData,
+      education: [...(resumeData.education || []), newEdu]
+    })
+  }
+
+  const removeEducation = (index) => {
+    const updated = (resumeData.education || []).filter((_, i) => i !== index)
+    onChange({
+      ...resumeData,
+      education: updated
+    })
+  }
+
   const tabs = [
     { id: 'experience', label: 'Experience', icon: Briefcase },
     { id: 'projects', label: 'Projects', icon: FolderGit2 },
@@ -700,55 +722,112 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
         {/* TAB 6: EDUCATION */}
         {activeTab === 'education' && (
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Education & Credentials</h3>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Education & Credentials</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Add degrees, colleges, universities, GPA/scores, or diplomas.</p>
+              </div>
+              <button
+                onClick={addEducation}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-800 transition shadow-sm"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add New Education
+              </button>
+            </div>
 
-            {(resumeData.education || []).map((edu, idx) => (
-              <div key={idx} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Institution</label>
-                    <input
-                      type="text"
-                      value={edu.school}
-                      onChange={(e) => {
-                        const updated = [...resumeData.education]
-                        updated[idx].school = e.target.value
-                        onChange({ ...resumeData, education: updated })
-                      }}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                    />
+            {(resumeData.education || []).length === 0 ? (
+              <div className="p-8 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <GraduationCap className="w-8 h-8 mx-auto text-slate-400 mb-2 opacity-60" />
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">No education entries added yet.</p>
+                <button
+                  onClick={addEducation}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition shadow-sm"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Education Entry
+                </button>
+              </div>
+            ) : (
+              (resumeData.education || []).map((edu, idx) => (
+                <div key={idx} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 bg-white dark:bg-slate-900/50 shadow-sm relative group">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                      Education #{idx + 1}
+                    </span>
+                    <button
+                      onClick={() => removeEducation(idx)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
+                      title="Remove education"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Degree & Major</label>
-                    <input
-                      type="text"
-                      value={edu.degree}
-                      onChange={(e) => {
-                        const updated = [...resumeData.education]
-                        updated[idx].degree = e.target.value
-                        onChange({ ...resumeData, education: updated })
-                      }}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                    />
-                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Institution</label>
+                      <input
+                        type="text"
+                        value={edu.school || ''}
+                        onChange={(e) => {
+                          const updated = [...resumeData.education]
+                          updated[idx] = { ...updated[idx], school: e.target.value }
+                          onChange({ ...resumeData, education: updated })
+                        }}
+                        placeholder="e.g. St Andrews Inst. of Tech & Mgmt"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Graduation Year</label>
-                    <input
-                      type="text"
-                      value={edu.graduationYear}
-                      onChange={(e) => {
-                        const updated = [...resumeData.education]
-                        updated[idx].graduationYear = e.target.value
-                        onChange({ ...resumeData, education: updated })
-                      }}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                    />
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Degree & Major</label>
+                      <input
+                        type="text"
+                        value={edu.degree || ''}
+                        onChange={(e) => {
+                          const updated = [...resumeData.education]
+                          updated[idx] = { ...updated[idx], degree: e.target.value }
+                          onChange({ ...resumeData, education: updated })
+                        }}
+                        placeholder="e.g. Bachelor of Computer Applications (BCA)"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Graduation Year / Status</label>
+                      <input
+                        type="text"
+                        value={edu.graduationYear || ''}
+                        onChange={(e) => {
+                          const updated = [...resumeData.education]
+                          updated[idx] = { ...updated[idx], graduationYear: e.target.value }
+                          onChange({ ...resumeData, education: updated })
+                        }}
+                        placeholder="e.g. 2025"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Grade / CGPA / Field (Optional)</label>
+                      <input
+                        type="text"
+                        value={edu.field || ''}
+                        onChange={(e) => {
+                          const updated = [...resumeData.education]
+                          updated[idx] = { ...updated[idx], field: e.target.value }
+                          onChange({ ...resumeData, education: updated })
+                        }}
+                        placeholder="e.g. CGPA: 7.5 or Computer Science"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
 
