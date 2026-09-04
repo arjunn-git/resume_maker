@@ -2,7 +2,7 @@ import React, {useState, memo} from 'react'
 import { apiPath } from '../utils/api'
 import { analyzeResume } from '../utils/analysis'
 
-export default memo(function JobMatch({resumeText=''}) {
+export default memo(function JobMatch({ resumeText = '', onApplyTailoring }) {
   const [job, setJob] = useState('')
   const [result, setResult] = useState(null)
 
@@ -137,6 +137,18 @@ export default memo(function JobMatch({resumeText=''}) {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* 1-Click AI Tailor to Target Job */}
+            {onApplyTailoring && (
+              <div className="pt-2">
+                <button
+                  onClick={() => onApplyTailoring(result.missingSkills || [])}
+                  className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white hover:opacity-95 shadow-md shadow-indigo-500/20 transition flex items-center justify-center gap-2"
+                >
+                  ⚡ One-Click Tailor Resume with Missing Job Keywords
+                </button>
               </div>
             )}
           </div>

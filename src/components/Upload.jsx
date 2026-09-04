@@ -144,6 +144,60 @@ EDUCATION
 Bachelor of Arts in Communications & Digital Media | UCLA (2018)
 Google Analytics 4 & Google Ads Certified (2022)
 `
+  },
+  creative: {
+    label: '🎨 UI/UX & Web Designer',
+    domain: 'creative',
+    text: `Arjun Taneja
+Frontend & Web Designer
+arjuntaneja204@gmail.com | +91 8950914728 | Gurugram, India | linkedin.com/in/arjuntaneja66137a272
+
+PROFESSIONAL PROFILE
+Creative and detail-oriented Frontend Web Designer with demonstrable success in creating responsive, accessible web interfaces, component design systems, and converting Figma designs into clean web apps.
+
+CORE COMPETENCIES & TECHNICAL SKILLS
+HTML5 • CSS3 • JavaScript (ES6+) • React.js • Tailwind CSS • Figma • UI/UX Design • REST API Integration • Git • Responsive Design • Agile/Scrum
+
+PROJECTS
+Smart Portfolio & Resume Studio | React.js, Tailwind CSS | 2024
+• Built interactive 3D web application with real-time dynamic scoring and responsive design.
+• Integrated REST APIs for dynamic role customization and optimized page load speeds by 40%.
+
+E-Commerce Web Portal | React, Node.js, MySQL | 2023
+• Designed user-centric product catalog and responsive checkout interface.
+• Decreased cart abandonment rate by 22% through clean user-experience design.
+
+EDUCATION
+Bachelor of Computer Applications (BCA) in St Andrews Inst. of Tech & Mgmt, Gurugram (2025)
+
+CERTIFICATIONS & ACCREDITATIONS
+Meta Certified Front-End Developer | Coursera
+`
+  },
+  education: {
+    label: '📚 Education & Academic Faculty',
+    domain: 'education',
+    text: `Dr. Elena Rostova
+Secondary STEM Educator & Curriculum Lead
+elena.rostova.edu@gmail.com | +1 (555) 789-0123 | Boston, MA | linkedin.com/in/elena-rostova-edu
+
+PROFESSIONAL SUMMARY
+Passionate STEM Educator with 6+ years experience designing inquiry-based curricula, integrating educational technology, and mentoring students in science and math. Proven record of boosting standardized test percentiles by 24%.
+
+CORE SKILLS
+Curriculum Design, Classroom Management, STEM Instruction, Differentiated Learning, Canvas LMS, Student Assessment, Interactive Lesson Planning, IEP Development
+
+PROFESSIONAL EXPERIENCE
+Lead Science Teacher | Westbridge Academy | 2021 - Present
+• Designed interactive physics and chemistry curriculum for 280+ high school students, raising AP pass rates by 22%.
+• Facilitated professional development workshops for 35 faculty members on active learning methodologies.
+
+Secondary Math Teacher | Boston Preparatory | 2018 - 2021
+• Delivered differentiated algebra and geometry lessons for diverse learning levels, achieving 96% annual course pass rate.
+
+EDUCATION
+Master of Education (M.Ed.) in Curriculum & Instruction | Boston University (2018)
+`
   }
 }
 

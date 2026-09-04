@@ -307,7 +307,34 @@ const COMMON_ACTION_VERBS = new Set([
   'translated', 'triaged', 'unified', 'upgraded', 'utilized', 'validated'
 ]);
 
-
+function compileResumeToText(resumeData) {
+  if (!resumeData) return '';
+  return [
+    resumeData.personalInfo?.fullName || '',
+    resumeData.personalInfo?.targetRole || '',
+    resumeData.personalInfo?.email || '',
+    resumeData.personalInfo?.phone || '',
+    resumeData.personalInfo?.location || '',
+    'PROFESSIONAL SUMMARY',
+    resumeData.summary || '',
+    'CORE SKILLS',
+    (resumeData.skills || []).join(', '),
+    (resumeData.experiences && resumeData.experiences.length > 0) ? 'PROFESSIONAL EXPERIENCE' : '',
+    ...(resumeData.experiences || []).flatMap(e => [
+      `${e.role} | ${e.company} | ${e.startDate} - ${e.endDate}`,
+      ...(e.bullets || []).map(b => `• ${b}`)
+    ]),
+    (resumeData.projects && resumeData.projects.length > 0) ? 'FEATURED PROJECTS' : '',
+    ...(resumeData.projects || []).flatMap(p => [
+      `${p.name} | ${p.tech || ''} (${p.date || ''})`,
+      ...(p.bullets || []).map(b => `• ${b}`)
+    ]),
+    (resumeData.education && resumeData.education.length > 0) ? 'EDUCATION' : '',
+    ...(resumeData.education || []).map(ed => `${ed.degree} in ${ed.field} - ${ed.school} (${ed.graduationYear})`),
+    (resumeData.certifications && resumeData.certifications.length > 0) ? 'CERTIFICATIONS' : '',
+    ...(resumeData.certifications || [])
+  ].filter(Boolean).join('\n');
+}
 
 function parseResumeToStructured(text = '', preferredDomain = null, fileName = '') {
   const normalizedFull = String(text || '').trim();
@@ -327,10 +354,15 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
   const githubMatch = normalizedFull.match(/(?:https?:\/\/)?(?:www\.)?(github\.com\/([a-zA-Z0-9_-]+)|[a-zA-Z0-9.-]+\.(?:dev|io|me))/i);
   const website = githubMatch ? `https://${githubMatch[1]}` : '';
 
+  // Clean location detection (never mistake tool stacks like Figma, VS Code for locations)
   let location = '';
-  const locMatch = normalizedFull.match(/\b([A-Z][a-zA-Z\s.-]+,\s*[A-Z]{2}(?:\s+\d{5})?|[A-Z][a-zA-Z\s]+,\s*(?:USA|United States|UK|Canada|India|Australia|Germany|France))\b/);
+  const locRegex = /\b([A-Z][a-zA-Z\s.-]+,\s*(?:AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|USA|United States|UK|Canada|India|Australia|Germany|France|Delhi|Gurugram|Noida|Bengaluru|Bangalore|Mumbai|Pune|Hyderabad|London|Toronto|Sydney|Singapore))\b/i;
+  const locMatch = normalizedFull.match(locRegex);
   if (locMatch) {
-    location = locMatch[1].trim();
+    const cand = locMatch[1].trim();
+    if (!/figma|vs code|react|node|javascript|html|css|python|office|suite|adobe|mysql|spring/i.test(cand)) {
+      location = cand;
+    }
   }
 
   // 2. Candidate Name & Target Role
@@ -369,7 +401,7 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
   for (let i = 0; i < Math.min(rawLines.length, 8); i++) {
     const l = rawLines[i];
     if (l === fullName || l.includes('@') || l.match(/\d{3}/)) continue;
-    if (/specialist|engineer|manager|developer|analyst|coordinator|director|lead|nurse|consultant|associate|administrator|designer|architect/i.test(l)) {
+    if (/specialist|engineer|manager|developer|analyst|coordinator|director|lead|nurse|consultant|associate|administrator|designer|architect|executive|officer|teacher|educator|practitioner|physician|accountant|representative/i.test(l)) {
       targetRole = l.replace(/[-|–].*$/, '').trim();
       break;
     }
@@ -378,8 +410,8 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
     targetRole = `${domainConfig.label} Professional`;
   }
 
-  // 3. Section Segmentation (Resilient against both clean newlines and flattened text)
-  const SECTION_HEADER_REGEX = /\b(PROFESSIONAL\s+SUMMARY|EXECUTIVE\s+SUMMARY|SUMMARY|WORK\s+EXPERIENCE|PROFESSIONAL\s+EXPERIENCE|EMPLOYMENT\s+HISTORY|WORK\s+HISTORY|EXPERIENCE|EDUCATION|ACADEMIC\s+BACKGROUND|SKILLS|TECHNICAL\s+SKILLS|CORE\s+COMPETENCIES|KEY\s+SKILLS|PROJECTS|CERTIFICATIONS)\b/gi;
+  // 3. Section Segmentation
+  const SECTION_HEADER_REGEX = /\b(PROFESSIONAL\s+SUMMARY|EXECUTIVE\s+SUMMARY|SUMMARY|PROFESSIONAL\s+PROFILE|PROFILE|WORK\s+EXPERIENCE|PROFESSIONAL\s+EXPERIENCE|EMPLOYMENT\s+HISTORY|WORK\s+HISTORY|EXPERIENCE|PROJECTS|KEY\s+PROJECTS|FEATURED\s+PROJECTS|TECHNICAL\s+PROJECTS|ACADEMIC\s+BACKGROUND|EDUCATION|CORE\s+COMPETENCIES\s*(?:&|and)?\s*TECHNICAL\s+SKILLS|TECHNICAL\s+SKILLS|CORE\s+COMPETENCIES|KEY\s+SKILLS|SKILLS|CERTIFICATIONS\s*(?:&|and)?\s*ACCREDITATIONS|CERTIFICATIONS|LICENSES|ACCREDITATIONS|AWARDS|ACHIEVEMENTS)\b/gi;
 
   const headerMatches = [];
   let m;
@@ -396,31 +428,31 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
       : normalizedFull.slice(current.index + current.length).trim();
 
     const lowerH = current.header.toLowerCase();
-    if (/experience|employment|work/i.test(lowerH)) sectionBlocks.experience = content;
+    if (/experience|employment|work\s+history/i.test(lowerH)) sectionBlocks.experience = content;
+    else if (/project/i.test(lowerH)) sectionBlocks.projects = content;
     else if (/education|academic/i.test(lowerH)) sectionBlocks.education = content;
     else if (/skills|competencies/i.test(lowerH)) sectionBlocks.skills = content;
     else if (/summary|profile/i.test(lowerH)) sectionBlocks.summary = content;
-    else if (/project/i.test(lowerH)) sectionBlocks.projects = content;
-    else if (/certif/i.test(lowerH)) sectionBlocks.certifications = content;
+    else if (/certif|licens|accredit/i.test(lowerH)) sectionBlocks.certifications = content;
   }
 
   // 4. Extract Summary
   let summary = sectionBlocks.summary || '';
-  if (summary.length > 500) summary = summary.slice(0, 500);
+  if (summary.length > 600) summary = summary.slice(0, 600);
 
-  // 5. Extract Skills
+  // 5. Extract Skills (Clean parentheticals & delimiters)
   const detectedSkills = [];
   if (sectionBlocks.skills) {
     const tokens = sectionBlocks.skills.split(/[,;•|·\n\r]+/).map(s => s.trim()).filter(s => s.length >= 2 && s.length <= 40);
     tokens.forEach(t => {
-      const cleaned = t.replace(/^[-*•\s]+/, '').replace(/^[A-Za-z\s]+:\s*/, '').trim();
+      let cleaned = t.replace(/^[-*•\s]+/, '').replace(/^[A-Za-z\s]+:\s*/, '').replace(/\([^)]*$/, '').trim();
       if (cleaned && !detectedSkills.includes(cleaned) && !/^(skills|technical|proficient|competencies)/i.test(cleaned)) {
         detectedSkills.push(cleaned);
       }
     });
   }
 
-  // Also check if domain skills appear anywhere in the document
+  // Also match domain skills present in full text
   const allDomainSkills = domainConfig.skills;
   allDomainSkills.forEach(skill => {
     const pattern = new RegExp(`\\b${escapeRegExp(skill)}\\b`, 'i');
@@ -435,7 +467,6 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
   const dateRegex = /\b((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{4}|\d{1,2}\/\d{4}|20\d\d|19\d\d)\s*(?:-|–|—|\bto\b)\s*((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{4}|\d{1,2}\/\d{4}|20\d\d|19\d\d|present|current)\b/gi;
 
   if (expContent) {
-    // Find all date positions in the experience content
     const datePositions = [];
     let dMatch;
     while ((dMatch = dateRegex.exec(expContent)) !== null) {
@@ -447,15 +478,11 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
         const curDate = datePositions[i];
         const nextDate = datePositions[i + 1];
 
-        // Header text preceding this date (role and company)
         const precedingStart = i === 0 ? 0 : datePositions[i - 1].index + datePositions[i - 1].length;
         const precedingChunk = expContent.slice(precedingStart, curDate.index).trim();
-
-        // Content after this date up to the next role's preceding text
         const followingEnd = nextDate ? nextDate.index : expContent.length;
         let bodyChunk = expContent.slice(curDate.index + curDate.length, followingEnd).trim();
 
-        // Separate company and role from precedingChunk
         const preLines = precedingChunk.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
         let role = '';
         let company = '';
@@ -477,14 +504,12 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
           }
         } else {
           role = targetRole;
-          company = 'Enterprise Corp';
+          company = 'Organization';
         }
 
-        // If bodyChunk has preceding text for next date, isolate bullets
         if (nextDate) {
           const bodyLines = bodyChunk.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
           if (bodyLines.length > 1) {
-            // Last 1 or 2 lines before next date might be next company/title
             const lastLine = bodyLines[bodyLines.length - 1];
             if (!/^[•\-\*·]/.test(lastLine) && lastLine.length < 50) {
               bodyChunk = bodyLines.slice(0, -1).join('\n');
@@ -492,19 +517,16 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
           }
         }
 
-        // Extract bullets from bodyChunk
         const bullets = [];
         const rawBullets = bodyChunk.split(/(?:^[•\-\*·▪▫–—>]\s*|\n\s*[•\-\*·▪▫–—>]\s*|\n{2,})/gm).map(b => b.trim()).filter(Boolean);
 
         for (const b of rawBullets) {
-          // Clean bullet text
           const cleanedBullet = b.replace(/^[•\-\*·▪▫–—>]\s*/, '').replace(/\s+/g, ' ').trim();
           if (cleanedBullet.length >= 15) {
             bullets.push(cleanedBullet);
           }
         }
 
-        // Fallback: If no bullets extracted via delimiters, split by sentences
         if (bullets.length === 0 && bodyChunk.length >= 20) {
           const sentences = bodyChunk.split(/\.\s+/).map(s => s.trim()).filter(s => s.length >= 15);
           sentences.forEach(s => bullets.push(s.replace(/\.$/, '') + '.'));
@@ -514,8 +536,8 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
 
         experiences.push({
           id: `exp-${Date.now()}-${experiences.length}`,
-          company: company.replace(/^[•\-\*]/, '').trim(),
-          role: role.replace(/^[•\-\*]/, '').trim(),
+          company: company.replace(/^[•\-\*·]/, '').trim(),
+          role: role.replace(/^[•\-\*·]/, '').trim(),
           location: roleLoc || 'Remote / On-site',
           startDate: dates[0] || '2021',
           endDate: dates[1] || 'Present',
@@ -529,15 +551,48 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
     }
   }
 
-  // Fallback if no dates matched in experience
+  // 7. Extract Projects (Key for developers, designers, engineers, students)
+  const projects = [];
+  const projContent = sectionBlocks.projects || '';
+  if (projContent) {
+    const projBlocks = projContent.split(/\n(?=[A-Z0-9][A-Za-z0-9\s.-]{2,40}(?:\||—|–|-|\())/g).map(p => p.trim()).filter(Boolean);
+    for (let i = 0; i < projBlocks.length; i++) {
+      const block = projBlocks[i];
+      const lines = block.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      if (lines.length === 0) continue;
+      
+      const titleLine = lines[0];
+      const titleParts = titleLine.split(/[|—–]/).map(p => p.trim());
+      const projName = titleParts[0] || `Project #${i + 1}`;
+      const projTech = titleParts[1] || '';
+      const projDate = titleParts[2] || (titleLine.match(/\b(20\d\d)\b/)?.[1] || '');
+
+      const projBullets = [];
+      for (let j = 1; j < lines.length; j++) {
+        const b = lines[j].replace(/^[•\-\*·>]\s*/, '').trim();
+        if (b.length >= 10) projBullets.push(b);
+      }
+
+      projects.push({
+        id: `proj-${Date.now()}-${i}`,
+        name: projName,
+        tech: projTech,
+        date: projDate,
+        bullets: projBullets.length > 0 ? projBullets : [
+          `Designed and implemented end-to-end functionality utilizing ${projTech || detectedSkills[0] || 'modern frameworks'}.`
+        ]
+      });
+    }
+  }
+
+  // If no experience was explicitly extracted but projects exist, provide an experience placeholder or promote project
   if (experiences.length === 0) {
-    // Scan raw lines for anything resembling job roles
     experiences.push({
       id: `exp-${Date.now()}-0`,
-      company: 'Organization',
+      company: 'Organization / Freelance',
       role: targetRole,
       location: location || 'Remote / On-site',
-      startDate: '2021',
+      startDate: '2022',
       endDate: 'Present',
       current: true,
       bullets: [
@@ -547,28 +602,68 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
     });
   }
 
-  // 7. Extract Education
+  // 8. Extract Education (Clean up and parse properly)
   const education = [];
   const eduContent = sectionBlocks.education || '';
   if (eduContent) {
-    const degreeRegex = /(bachelor|master|phd|doctorate|associate|b\.s\.|b\.a\.|m\.s\.|m\.a\.|mba|b\.tech|b\.e\.|m\.tech|diploma|degree)/i;
     const eduLines = eduContent.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
     for (let i = 0; i < eduLines.length; i++) {
       const line = eduLines[i];
-      const yearMatch = line.match(/\b(20\d\d|19\d\d)\b/);
-      const gradYear = yearMatch ? yearMatch[1] : '2020';
+      if (/^\d{4}$/.test(line)) continue;
 
-      if (degreeRegex.test(line)) {
-        const parts = line.split(/[|—–-]/).map(p => p.trim());
-        education.push({
-          id: `edu-${Date.now()}-${education.length}`,
-          degree: parts[0] || 'Bachelor of Science',
-          field: parts[1] || domainConfig.label,
-          school: parts[2] || (eduLines[i + 1] && !degreeRegex.test(eduLines[i + 1]) ? eduLines[i + 1] : 'University'),
-          graduationYear: gradYear,
-          location: location || ''
-        });
+      const rangeMatch = line.match(/\b(20\d\d|19\d\d)\s*(?:-|—|–|\bto\b)\s*(20\d\d|19\d\d|present)\b/i);
+      let gradYear = '2024';
+      let lineClean = line;
+
+      if (rangeMatch) {
+        gradYear = rangeMatch[2];
+        lineClean = line.replace(rangeMatch[0], '');
+      } else {
+        const singleYear = line.match(/\b(20\d\d|19\d\d)\b/);
+        if (singleYear) {
+          gradYear = singleYear[1];
+          lineClean = line.replace(singleYear[0], '');
+        }
       }
+
+      lineClean = lineClean.replace(/\b(20\d\d|19\d\d)\b/g, '').replace(/[-—–]/g, ' ').replace(/\s+/g, ' ').trim();
+
+      let degree = '';
+      let field = '';
+      let school = '';
+
+      if (/\s+in\s+/i.test(lineClean)) {
+        const parts = lineClean.split(/\s+in\s+/i);
+        degree = parts[0].trim();
+        school = parts.slice(1).join(' in ').replace(/\(\s*\)/g, '').replace(/[-—–]/g, '').trim();
+      } else if (lineClean.includes('|')) {
+        const parts = lineClean.split('|').map(p => p.trim());
+        degree = parts[0];
+        school = parts[1] ? parts[1].replace(/\(\s*\)/g, '').trim() : '';
+      } else {
+        degree = lineClean;
+        if (eduLines[i + 1] && !/^\d{4}$/.test(eduLines[i + 1]) && !/(bachelor|master|degree|diploma|bca|mca|btech)/i.test(eduLines[i + 1])) {
+          school = eduLines[i + 1].replace(/\(\s*\)/g, '').trim();
+          i++;
+        }
+      }
+      school = (school || 'Accredited Institution').replace(/\(\s*\)/g, '').trim();
+
+      const parenMatch = degree.match(/\(([^)]+)\)/);
+      if (parenMatch) {
+        field = parenMatch[1].trim();
+      } else {
+        field = domainConfig.label;
+      }
+
+      education.push({
+        id: `edu-${Date.now()}-${education.length}`,
+        degree: degree || 'Bachelor Degree',
+        field: field || domainConfig.label,
+        school: school || 'Accredited Institution',
+        graduationYear: gradYear,
+        location: location || ''
+      });
     }
   }
 
@@ -580,10 +675,23 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
         school: uniLine.replace(/^[•\-*]\s*/, '').trim(),
         degree: 'Bachelor Degree',
         field: domainConfig.label,
-        graduationYear: uniLine.match(/\b(20\d\d)\b/)?.[1] || '2020',
+        graduationYear: uniLine.match(/\b(20\d\d)\b/)?.[1] || '2023',
         location: location || ''
       });
     }
+  }
+
+  // 9. Extract Certifications (Clean tags and accrediting bodies)
+  const certs = [];
+  const certContent = sectionBlocks.certifications || '';
+  if (certContent) {
+    const rawTokens = certContent.split(/\n+|(?<![A-Za-z0-9])•|·/).map(s => s.trim()).filter(Boolean);
+    rawTokens.forEach(t => {
+      const cleanT = t.replace(/^(certifications|accreditations|licenses|awards)[:\s&]*/i, '').replace(/^[•\-*]\s*/, '').trim();
+      if (cleanT.length >= 4 && !certs.includes(cleanT)) {
+        certs.push(cleanT);
+      }
+    });
   }
 
   if (!summary) {
@@ -605,8 +713,9 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
     summary,
     skills: detectedSkills.length > 0 ? detectedSkills : domainConfig.skills.slice(0, 8),
     experiences,
+    projects,
     education,
-    certifications: sectionBlocks.certifications ? sectionBlocks.certifications.split(/[,;•|\n]+/).map(s => s.trim()).filter(Boolean) : [
+    certifications: certs.length > 0 ? certs : [
       `Certified ${domainConfig.label} Professional`
     ]
   };
@@ -686,26 +795,7 @@ function optimizeResumeWithAI(resumeData, preferredDomain = null, targetJobDescr
     };
   });
 
-  const compiledText = [
-    optimized.personalInfo?.fullName || '',
-    optimized.personalInfo?.targetRole || '',
-    optimized.personalInfo?.email || '',
-    optimized.personalInfo?.phone || '',
-    optimized.personalInfo?.location || '',
-    'PROFESSIONAL SUMMARY',
-    optimized.summary || '',
-    'CORE SKILLS',
-    (optimized.skills || []).join(', '),
-    'PROFESSIONAL EXPERIENCE',
-    ...(optimized.experiences || []).flatMap(e => [
-      `${e.role} | ${e.company} | ${e.startDate} - ${e.endDate}`,
-      ...(e.bullets || []).map(b => `• ${b}`)
-    ]),
-    'EDUCATION',
-    ...(optimized.education || []).map(ed => `${ed.degree} in ${ed.field} - ${ed.school} (${ed.graduationYear})`),
-    'CERTIFICATIONS',
-    ...(optimized.certifications || [])
-  ].filter(Boolean).join('\n');
+  const compiledText = compileResumeToText(optimized);
 
   const analysis = analyzeResume(compiledText, domainKey);
 

@@ -128,6 +128,23 @@ export default function App() {
     }
   }
 
+  // 1-Click AI Tailor to Target Job
+  const handleApplyTailoring = (missingSkills = []) => {
+    if (!resumeData) return
+    setIsScanning(true)
+    setScanMessage('Tailoring Resume to Target Job Requirements...')
+
+    setTimeout(() => {
+      const updatedSkills = Array.from(new Set([...(resumeData.skills || []), ...missingSkills]))
+      const updatedResume = { ...resumeData, skills: updatedSkills }
+      const optResult = optimizeResumeWithAI(updatedResume, updatedResume.domain)
+      setResumeData(optResult.optimizedData)
+      setAnalysis(optResult.analysis)
+      setIsScanning(false)
+      setActiveView('studio')
+    }, 700)
+  }
+
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
       {/* 3D Ambient Constellation Canvas */}
@@ -248,7 +265,10 @@ export default function App() {
             {/* TAB: TARGET JOB MATCH */}
             {activeView === 'jobmatch' && (
               <div className="max-w-4xl mx-auto">
-                <JobMatch resumeText={compileResumeToText(resumeData)} />
+                <JobMatch
+                  resumeText={compileResumeToText(resumeData)}
+                  onApplyTailoring={handleApplyTailoring}
+                />
               </div>
             )}
           </div>
