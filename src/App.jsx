@@ -41,7 +41,7 @@ export default function App() {
     setTimeout(() => {
       try {
         const text = fileInfo.text || ''
-        const structured = parseResumeToStructured(text)
+        const structured = parseResumeToStructured(text, null, fileInfo.name || '')
         const initialAnalysis = analyzeResume(text, structured.domain)
 
         setResumeData(structured)
@@ -62,7 +62,7 @@ export default function App() {
     setScanMessage(`Loading ${sample.label}...`)
 
     setTimeout(() => {
-      const structured = parseResumeToStructured(sample.text, sample.domain)
+      const structured = parseResumeToStructured(sample.text, sample.domain, sample.label)
       const initialAnalysis = analyzeResume(sample.text, sample.domain)
 
       setResumeData(structured)

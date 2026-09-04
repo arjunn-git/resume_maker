@@ -285,277 +285,390 @@ function analyzeResume(text = '', preferredDomain = null) {
   }
 }
 
-function parseResumeToStructured(text = '', preferredDomain = null) {
+
+const COMMON_ACTION_VERBS = new Set([
+  'scheduled', 'implemented', 'trained', 'recorded', 'assisted', 'managed',
+  'designed', 'developed', 'built', 'led', 'coordinated', 'analyzed',
+  'spearheaded', 'engineered', 'orchestrated', 'delivered', 'administered',
+  'resolved', 'created', 'optimized', 'maintained', 'oversaw', 'monitored',
+  'architected', 'facilitated', 'negotiated', 'conducted', 'directed',
+  'established', 'executed', 'formulated', 'generated', 'identified',
+  'improved', 'initiated', 'inspected', 'instructed', 'integrated',
+  'launched', 'mentored', 'modernized', 'motivated', 'navigated',
+  'negotiated', 'obtained', 'operated', 'organized', 'originated',
+  'overhauled', 'performed', 'planned', 'prepared', 'presented',
+  'produced', 'programmed', 'promoted', 'proposed', 'provided',
+  'published', 'purchased', 'reconciled', 'recruited', 'redesigned',
+  'reduced', 'refined', 'reorganized', 'replaced', 'restructured',
+  'revamped', 'reviewed', 'revitalized', 'saved', 'screened',
+  'secured', 'selected', 'simplified', 'solved', 'standardized',
+  'streamlined', 'strengthened', 'supervised', 'surpassed', 'synthesized',
+  'systematized', 'targeted', 'tested', 'tracked', 'transformed',
+  'translated', 'triaged', 'unified', 'upgraded', 'utilized', 'validated'
+]);
+
+
+
+function parseResumeToStructured(text = '', preferredDomain = null, fileName = '') {
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const normalizedFull = text.toLowerCase();
+
   const domainKey = detectDomain(text, preferredDomain);
   const domainConfig = DOMAIN_DEFINITIONS[domainKey] || DOMAIN_DEFINITIONS.general;
-  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
 
   const emailMatch = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
-  const email = emailMatch ? emailMatch[1] : '';
+  const email = emailMatch ? emailMatch[1].trim() : '';
 
-  const phoneMatch = text.match(/(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
-  const phone = phoneMatch ? phoneMatch[0] : '';
+  const phoneMatch = text.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+  const phone = phoneMatch ? phoneMatch[0].trim() : '';
 
-  const linkedinMatch = text.match(/(linkedin\.com\/in\/[a-zA-Z0-9_-]+)/i);
-  const linkedin = linkedinMatch ? `https://${linkedinMatch[1]}` : '';
+  const linkedinMatch = text.match(/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/([a-zA-Z0-9_-]+)/i);
+  const linkedin = linkedinMatch ? `https://linkedin.com/in/${linkedinMatch[1]}` : '';
 
-  const githubMatch = text.match(/(github\.com\/[a-zA-Z0-9_-]+)/i);
-  const github = githubMatch ? `https://${githubMatch[1]}` : '';
+  const githubMatch = text.match(/(?:https?:\/\/)?(?:www\.)?(github\.com\/[a-zA-Z0-9_-]+|[a-zA-Z0-9.-]+\.(?:dev|io|me))/i);
+  const website = githubMatch ? `https://${githubMatch[1]}` : '';
 
-  let fullName = 'Alex Taylor';
-  if (lines.length > 0) {
-    const firstLine = lines[0].replace(/[^a-zA-Z\s.-]/g, '').trim();
-    if (firstLine.length > 2 && firstLine.length < 40 && !/resume|curriculum|profile/i.test(firstLine)) {
-      fullName = firstLine;
+  let location = '';
+  const locMatch = text.match(/\b([A-Z][a-zA-Z\s.-]+,\s*[A-Z]{2}(?:\s+\d{5})?|[A-Z][a-zA-Z\s]+,\s*(?:USA|United States|UK|Canada|India|Australia|Germany|France))\b/);
+  if (locMatch) {
+    location = locMatch[1].trim();
+  }
+
+  let fullName = '';
+  for (let i = 0; i < Math.min(lines.length, 6); i++) {
+    const l = lines[i];
+    if (l.includes('@') || l.match(/\d{3}/) || l.includes('http') || l.includes('linkedin.com')) continue;
+    if (/^(resume|curriculum|vitae|cv|page\s*\d+|contact|profile)/i.test(l)) continue;
+    
+    const cleaned = l.replace(/[^a-zA-Z\s.-]/g, '').trim();
+    const words = cleaned.split(/\s+/);
+    if (words.length >= 2 && words.length <= 4 && cleaned.length >= 4 && cleaned.length <= 35) {
+      if (words.every(w => w.length > 0 && (w[0] === w[0].toUpperCase() || w.length === 1))) {
+        fullName = cleaned;
+        break;
+      }
     }
   }
 
-  let targetRole = `${domainConfig.label} Specialist`;
-  for (let i = 1; i < Math.min(lines.length, 5); i++) {
-    const line = lines[i];
-    if (line.length > 3 && line.length < 50 && !line.includes('@') && !line.match(/\d{3}/)) {
-      targetRole = line;
+  if (!fullName && fileName) {
+    const base = fileName.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ').replace(/\b(resume|cv|latest|new|updated|202\d)\b/gi, '').trim();
+    if (base.length >= 3) {
+      fullName = base.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+  }
+
+  if (!fullName) {
+    fullName = lines[0]?.slice(0, 30)?.trim() || 'Candidate Name';
+  }
+
+  let targetRole = '';
+  for (let i = 0; i < Math.min(lines.length, 8); i++) {
+    const l = lines[i];
+    if (l === fullName || l.includes('@') || l.match(/\d{3}/)) continue;
+    if (/specialist|engineer|manager|developer|analyst|coordinator|director|lead|nurse|consultant|associate|administrator|designer/i.test(l)) {
+      targetRole = l.replace(/[-|–].*$/, '').trim();
       break;
     }
   }
+  if (!targetRole) {
+    targetRole = `${domainConfig.label} Professional`;
+  }
 
-  const analysis = analyzeResume(text, domainKey);
-  const detectedSkills = analysis.skills.length > 0 ? analysis.skills : domainConfig.skills.slice(0, 8);
+  const SECTION_PATTERNS = [
+    { type: 'summary', regex: /^(professional\s+summary|executive\s+summary|summary|profile|about\s+me|career\s+objective|objective)\b/i },
+    { type: 'experience', regex: /^(work\s+experience|professional\s+experience|employment\s+history|work\s+history|experience|career\s+history|relevant\s+experience|internships?)\b/i },
+    { type: 'education', regex: /^(education|academic\s+background|academic\s+qualifications?|academics?|degrees?)\b/i },
+    { type: 'skills', regex: /^(skills|technical\s+skills|core\s+competencies|key\s+skills|competencies|technologies|tools?|areas\s+of\s+expertise)\b/i },
+    { type: 'projects', regex: /^(projects|key\s+projects|academic\s+projects|personal\s+projects)\b/i },
+    { type: 'certifications', regex: /^(certifications?|licenses?|credentials?|accreditations?)\b/i }
+  ];
+
+  const sections = {};
+  let currentSection = 'header';
+  sections[currentSection] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const matchedSec = SECTION_PATTERNS.find(p => p.regex.test(line));
+    if (matchedSec) {
+      currentSection = matchedSec.type;
+      if (!sections[currentSection]) sections[currentSection] = [];
+    } else {
+      sections[currentSection].push(line);
+    }
+  }
 
   let summary = '';
-  const summaryIndex = lines.findIndex(l => /^(professional\s+summary|summary|profile|about\s+me|objective)/i.test(l));
-  if (summaryIndex !== -1 && lines[summaryIndex + 1]) {
-    summary = lines.slice(summaryIndex + 1, summaryIndex + 4).join(' ');
-  } else {
-    summary = `Results-driven ${targetRole} with demonstrated expertise in ${detectedSkills.slice(0, 3).join(', ')}. Proven track record of executing strategic initiatives, driving measurable operational efficiencies, and delivering high-impact solutions across collaborative cross-functional environments.`;
+  if (sections.summary && sections.summary.length > 0) {
+    summary = sections.summary.join(' ').trim();
   }
+
+  const detectedSkills = [];
+  if (sections.skills && sections.skills.length > 0) {
+    const rawSkillsText = sections.skills.join(', ');
+    const tokens = rawSkillsText.split(/[,;•|·\n\r]+/).map(s => s.trim()).filter(s => s.length >= 2 && s.length <= 40);
+    tokens.forEach(t => {
+      const cleaned = t.replace(/^[-*•\s]+/, '').replace(/^[A-Za-z\s]+:\s*/, '').trim();
+      if (cleaned && !detectedSkills.includes(cleaned) && !/^(skills|technical|proficient|competencies)/i.test(cleaned)) {
+        detectedSkills.push(cleaned);
+      }
+    });
+  }
+
+  const allDomainSkills = domainConfig.skills;
+  allDomainSkills.forEach(skill => {
+    const pattern = new RegExp(`\\b${skill.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i');
+    if (pattern.test(normalizedFull) && !detectedSkills.some(s => s.toLowerCase() === skill.toLowerCase())) {
+      detectedSkills.push(skill);
+    }
+  });
 
   const experiences = [];
-  const expIndex = lines.findIndex(l => /^(experience|work\s+history|professional\s+experience|employment)/i.test(l));
-  
-  if (expIndex !== -1) {
-    let currentRole = null;
-    for (let i = expIndex + 1; i < lines.length; i++) {
-      const line = lines[i];
-      if (/^(education|skills|projects|certifications|awards)/i.test(line)) {
-        break;
-      }
-      
-      const isBullet = /^[•\-\*]\s*/.test(line);
-      if (isBullet && currentRole) {
-        currentRole.bullets.push(line.replace(/^[•\-\*]\s*/, ''));
-      } else if (line.length > 3 && !isBullet) {
-        if (currentRole && currentRole.bullets.length > 0) {
-          experiences.push(currentRole);
+  const expLines = sections.experience || [];
+
+  if (expLines.length > 0) {
+    const dateRegex = /\b((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{4}|\d{1,2}\/\d{4}|20\d\d|19\d\d)\s*(?:-|–|—|\bto\b)\s*((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{4}|\d{1,2}\/\d{4}|20\d\d|19\d\d|present|current)\b/i;
+    
+    let currentExp = null;
+
+    for (let i = 0; i < expLines.length; i++) {
+      const line = expLines[i];
+      const hasDate = dateRegex.test(line);
+      const isBullet = /^[•\-\*·▪▫–—>]\s*/.test(line);
+
+      // Check if next line has a date (meaning current line is company/title, not a bullet)
+      const nextLineHasDate = i + 1 < expLines.length && dateRegex.test(expLines[i + 1]);
+
+      if (hasDate) {
+        if (currentExp && currentExp.bullets.length > 0) {
+          experiences.push(currentExp);
         }
-        currentRole = {
+
+        const dateMatch = line.match(dateRegex);
+        const dateStr = dateMatch ? dateMatch[0] : '';
+        const nonDatePart = line.replace(dateRegex, '').replace(/[|–—,\s]+$/, '').replace(/^[|–—,\s]+/, '').trim();
+
+        let role = nonDatePart || 'Role / Position';
+        let company = 'Organization';
+        let expLoc = location;
+
+        if (i > 0 && !dateRegex.test(expLines[i - 1]) && !/^[•\-\*]/.test(expLines[i - 1])) {
+          const prev = expLines[i - 1];
+          if (prev.includes('|') || prev.includes('—') || prev.includes('-')) {
+            const parts = prev.split(/[|—–-]/).map(p => p.trim());
+            company = parts[0];
+            if (parts[1]) expLoc = parts[1];
+          } else {
+            company = prev;
+          }
+        } else if (nonDatePart.includes('|') || nonDatePart.includes('—') || nonDatePart.includes('-')) {
+          const parts = nonDatePart.split(/[|—–-]/).map(p => p.trim());
+          role = parts[0];
+          company = parts[1] || company;
+        }
+
+        const dates = dateStr.split(/(?:-|–|—|\bto\b)/i).map(d => d.trim());
+
+        currentExp = {
           id: `exp-${Date.now()}-${experiences.length}`,
-          company: line.split(/[-–|,]/)[1]?.trim() || line.trim(),
-          role: line.split(/[-–|,]/)[0]?.trim() || 'Role / Position',
-          location: 'Remote / On-site',
-          startDate: '2022',
-          endDate: 'Present',
-          current: true,
+          company: company.replace(/^[•\-\*]/, '').trim(),
+          role: role.replace(/^[•\-\*]/, '').trim(),
+          location: expLoc || 'Remote / On-site',
+          startDate: dates[0] || '2021',
+          endDate: dates[1] || 'Present',
+          current: /present|current/i.test(dates[1] || ''),
           bullets: []
         };
+      } else if (nextLineHasDate) {
+        // This line precedes the next role's dates (it's the next company name), don't treat as bullet
+        continue;
+      } else if (isBullet && currentExp) {
+        const bulletText = line.replace(/^[•\-\*·▪▫–—>]\s*/, '').trim();
+        if (bulletText.length > 5) {
+          currentExp.bullets.push(bulletText);
+        }
+      } else if (currentExp && line.length >= 25 && !/^(education|skills|certifications|projects)/i.test(line)) {
+        currentExp.bullets.push(line.trim());
       }
     }
-    if (currentRole && currentRole.bullets.length > 0) {
-      experiences.push(currentRole);
+
+    if (currentExp && currentExp.bullets.length > 0) {
+      experiences.push(currentExp);
     }
   }
 
-  if (experiences.length === 0) {
-    const defaultVerbs = domainConfig.actionVerbs;
-    const defaultMetrics = domainConfig.metricTemplates;
-    experiences.push({
-      id: `exp-${Date.now()}-0`,
-      company: 'Enterprise Solutions Corp',
-      role: `Senior ${targetRole}`,
-      location: 'New York, NY',
-      startDate: '2022',
-      endDate: 'Present',
-      current: true,
-      bullets: [
-        `${defaultVerbs[0] || 'Spearheaded'} end-to-end departmental operations utilizing ${detectedSkills[0] || 'core methodologies'}, ${defaultMetrics[0] || 'improving efficiency by 34%'}.`,
-        `${defaultVerbs[1] || 'Orchestrated'} collaborative initiatives across 4 cross-functional teams, driving measurable improvements in quality and SLA delivery.`,
-        `${defaultVerbs[2] || 'Implemented'} automated process standards, ${defaultMetrics[1] || 'reducing project cycle time by 28%'}.`
-      ]
-    });
-    experiences.push({
-      id: `exp-${Date.now()}-1`,
-      company: 'Dynamic Systems Group',
-      role: targetRole,
-      location: 'San Francisco, CA',
-      startDate: '2020',
-      endDate: '2022',
-      current: false,
-      bullets: [
-        `${defaultVerbs[3] || 'Delivered'} high-priority client deliverables on-schedule, maintaining 99% satisfaction rate.`,
-        `Collaborated with leadership to introduce optimized protocols that minimized operational overhead.`
-      ]
-    });
+  // Extract Education
+  const education = [];
+  const eduLines = sections.education || [];
+  if (eduLines.length > 0) {
+    const degreeRegex = /(bachelor|master|phd|doctorate|associate|b\.s\.|b\.a\.|m\.s\.|m\.a\.|mba|b\.tech|b\.e\.|m\.tech|diploma|degree)/i;
+    for (let i = 0; i < eduLines.length; i++) {
+      const line = eduLines[i];
+      const yearMatch = line.match(/\b(20\d\d|19\d\d)\b/);
+      const gradYear = yearMatch ? yearMatch[1] : '2020';
+
+      if (degreeRegex.test(line)) {
+        const parts = line.split(/[|—–-]/).map(p => p.trim());
+        education.push({
+          id: `edu-${Date.now()}-${education.length}`,
+          degree: parts[0] || 'Bachelor of Science',
+          field: parts[1] || domainConfig.label,
+          school: parts[2] || (eduLines[i + 1] && !degreeRegex.test(eduLines[i + 1]) ? eduLines[i + 1] : 'University'),
+          graduationYear: gradYear,
+          location: location || ''
+        });
+      }
+    }
   }
 
-  const education = [];
-  const eduIndex = lines.findIndex(l => /^(education|academic\s+history|university)/i.test(l));
-  if (eduIndex !== -1 && lines[eduIndex + 1]) {
-    education.push({
-      id: `edu-${Date.now()}-0`,
-      school: lines[eduIndex + 1],
-      degree: 'Bachelor of Science / Arts',
-      field: domainConfig.label,
-      graduationYear: '2020',
-      location: 'United States'
-    });
-  } else {
-    education.push({
-      id: `edu-${Date.now()}-0`,
-      school: 'State University',
-      degree: 'Bachelor of Science',
-      field: domainConfig.label,
-      graduationYear: '2020',
-      location: 'Boston, MA'
-    });
+  if (education.length === 0) {
+    const uniLine = lines.find(l => /university|college|institute|academy|school\s+of/i.test(l));
+    if (uniLine) {
+      education.push({
+        id: `edu-${Date.now()}-0`,
+        school: uniLine.replace(/^[•\-*]\s*/, '').trim(),
+        degree: 'Bachelor Degree',
+        field: domainConfig.label,
+        graduationYear: uniLine.match(/\b(20\d\d)\b/)?.[1] || '2020',
+        location: location || ''
+      });
+    }
+  }
+
+  if (!summary) {
+    const top3 = detectedSkills.slice(0, 3).join(', ') || domainConfig.skills.slice(0, 3).join(', ');
+    summary = `Dedicated ${targetRole} with proven expertise in ${top3}. Track record of driving successful operational execution, collaborating across teams, and delivering measurable results.`;
   }
 
   return {
     personalInfo: {
       fullName,
       targetRole,
-      email: email || 'alex.taylor.pro@gmail.com',
-      phone: phone || '+1 (555) 234-5678',
-      location: 'San Francisco, CA',
-      linkedin: linkedin || 'https://linkedin.com/in/alex-taylor',
-      website: github || 'https://alex-taylor.dev'
+      email,
+      phone,
+      location,
+      linkedin,
+      website
     },
     domain: domainKey,
     summary,
-    skills: detectedSkills,
+    skills: detectedSkills.length > 0 ? detectedSkills : domainConfig.skills.slice(0, 8),
     experiences,
     education,
-    projects: [
-      {
-        id: `proj-${Date.now()}-0`,
-        title: `${domainConfig.label} Optimization Initiative`,
-        description: `Led end-to-end strategy and implementation resulting in improved organizational metrics.`,
-        tools: detectedSkills.slice(0, 3).join(', '),
-        link: 'https://github.com/project'
-      }
-    ],
-    certifications: [
-      `Certified ${domainConfig.label} Professional`,
-      'Agile / Six Sigma Foundations'
+    certifications: sections.certifications || [
+      `Certified ${domainConfig.label} Professional`
     ]
   };
 }
 
+
+
 function optimizeResumeWithAI(resumeData, preferredDomain = null, targetJobDescription = '') {
-  try {
-    const domainKey = detectDomain('', preferredDomain || resumeData.domain);
-    const domainConfig = DOMAIN_DEFINITIONS[domainKey] || DOMAIN_DEFINITIONS.general;
+  const domainKey = detectDomain('', preferredDomain || resumeData.domain);
+  const domainConfig = DOMAIN_DEFINITIONS[domainKey] || DOMAIN_DEFINITIONS.general;
 
-    const optimized = JSON.parse(JSON.stringify(resumeData));
-    optimized.domain = domainKey;
+  const optimized = JSON.parse(JSON.stringify(resumeData));
+  optimized.domain = domainKey;
 
-    let issuesFixedCount = 0;
+  let issuesFixedCount = 0;
 
-    // 1. Optimize Summary
-    const topSkills = Array.from(new Set([...optimized.skills, ...domainConfig.skills.slice(0, 5)])).slice(0, 4);
-    optimized.summary = `Results-oriented ${optimized.personalInfo.targetRole || domainConfig.label + ' Specialist'} with 5+ years of verified expertise across ${topSkills.join(', ')}. Track record of leveraging data-driven strategies to solve complex challenges, accelerate organizational performance, and optimize key operational KPIs. Dedicated to applying best practices and industry standards in high-velocity environments.`;
-    issuesFixedCount += 1;
+  // 1. Personalized Summary Enhancement (Elevate USER'S actual narrative)
+  const role = optimized.personalInfo.targetRole || `${domainConfig.label} Professional`;
+  const userSkills = optimized.skills.slice(0, 4);
+  const yearsMatch = (optimized.summary || '').match(/(\d+)\+?\s*years/i);
+  const yearsExp = yearsMatch ? `${yearsMatch[1]}+ years` : '5+ years';
 
-    // 2. Expand Skills Matrix
-    const currentSkillsLower = new Set(optimized.skills.map(s => s.toLowerCase()));
-    const missingHighYield = domainConfig.skills.filter(s => !currentSkillsLower.has(s.toLowerCase()));
-    const addedSkills = missingHighYield.slice(0, 5);
-    optimized.skills = Array.from(new Set([...optimized.skills, ...addedSkills]));
-    if (addedSkills.length > 0) issuesFixedCount += 1;
+  if (optimized.summary && optimized.summary.length > 20) {
+    const coreSkillsStr = userSkills.join(', ');
+    optimized.summary = `Accomplished ${role} with ${yearsExp} of demonstrated expertise in ${coreSkillsStr}. Proven track record of driving operational efficiencies, optimizing cross-functional workflows, and delivering measurable performance improvements while maintaining high industry standards.`;
+  } else {
+    optimized.summary = `Results-oriented ${role} with expertise in ${userSkills.join(', ')}. Track record of delivering high-impact solutions, collaborating with cross-functional stakeholders, and executing key strategic priorities.`;
+  }
+  issuesFixedCount += 1;
 
-    // 3. Optimize Experience Bullets
-    const verbs = domainConfig.actionVerbs;
-    const metrics = domainConfig.metricTemplates;
+  // 2. Expand Skills Matrix with complementary Domain competencies (Keep ALL user skills!)
+  const existingLower = new Set(optimized.skills.map(s => s.toLowerCase()));
+  const missingDomainSkills = domainConfig.skills.filter(s => !existingLower.has(s.toLowerCase()));
+  const recommendedAdditions = missingDomainSkills.slice(0, 4);
+  optimized.skills = Array.from(new Set([...optimized.skills, ...recommendedAdditions]));
+  if (recommendedAdditions.length > 0) issuesFixedCount += 1;
 
-    optimized.experiences = optimized.experiences.map((exp, expIdx) => {
-      const enhancedBullets = exp.bullets.map((bullet, bulletIdx) => {
-        const hasMetric = /[0-9]+%|\$[0-9]+|\b\d+\b/.test(bullet);
-        const actionVerb = verbs[(expIdx * 3 + bulletIdx) % verbs.length];
-        const metricSnippet = metrics[(expIdx * 2 + bulletIdx) % metrics.length];
+  // 3. Personalized Bullet Point Rewriting (STAR/XYZ applied to USER'S actual bullets)
+  const verbs = domainConfig.actionVerbs;
+  const metrics = domainConfig.metricTemplates;
 
-        if (!hasMetric) {
-          issuesFixedCount += 1;
-          const cleanedBullet = bullet.replace(/^(responsible for|helped with|worked on|assisted in|managed to|did)\s+/i, '');
-          return `${actionVerb} ${cleanedBullet.charAt(0).toLowerCase() + cleanedBullet.slice(1)}, ${metricSnippet}.`;
-        } else {
-          const startsWithVerb = new RegExp(`^(${verbs.join('|')})\\b`, 'i').test(bullet);
-          if (!startsWithVerb) {
-            issuesFixedCount += 1;
-            return `${actionVerb} ${bullet.charAt(0).toLowerCase() + bullet.slice(1)}`;
-          }
-          return bullet;
-        }
-      });
+  optimized.experiences = optimized.experiences.map((exp, expIdx) => {
+    const enhancedBullets = exp.bullets.map((bullet, bulletIdx) => {
+      let cleaned = bullet.trim()
+        .replace(/^(responsible for|helped with|worked on|assisted in|assisted|managed to|did|handled|supported in)\s+/i, '')
+        .replace(/[.\s]+$/, '');
 
-      while (enhancedBullets.length < 3) {
-        const fallbackVerb = verbs[(enhancedBullets.length + 2) % verbs.length];
-        const fallbackMetric = metrics[(enhancedBullets.length + 1) % metrics.length];
-        enhancedBullets.push(`${fallbackVerb} cross-functional initiatives aligned with corporate objectives, ${fallbackMetric}.`);
+      const hasMetric = /[0-9]+%|\$[0-9]+|\b\d+\b/.test(cleaned);
+      const metricSnippet = metrics[(expIdx * 3 + bulletIdx) % metrics.length] || 'improving efficiency by 28%';
+
+      const firstWord = (cleaned.split(/\s+/)[0] || '').toLowerCase();
+      const isExistingStrongVerb = COMMON_ACTION_VERBS.has(firstWord) || verbs.some(v => v.toLowerCase() === firstWord);
+
+      let upgraded = cleaned;
+
+      if (isExistingStrongVerb) {
+        // Keep the user's action verb and capitalize it
+        upgraded = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+      } else {
+        // Upgrade weak opening with domain power verb
+        const actionVerb = verbs[(expIdx * 4 + bulletIdx) % verbs.length] || 'Spearheaded';
+        upgraded = `${actionVerb} ${cleaned.charAt(0).toLowerCase() + cleaned.slice(1)}`;
         issuesFixedCount += 1;
       }
 
-      return {
-        ...exp,
-        bullets: enhancedBullets
-      };
+      if (!hasMetric) {
+        upgraded = `${upgraded}, ${metricSnippet}.`;
+        issuesFixedCount += 1;
+      } else {
+        upgraded = `${upgraded}.`;
+      }
+
+      return upgraded;
     });
 
-    // 4. Ensure Contact Info
-    if (!optimized.personalInfo.email || optimized.personalInfo.email.includes('example.com')) {
-      optimized.personalInfo.email = 'candidate.pro@gmail.com';
-      issuesFixedCount += 1;
-    }
-    if (!optimized.personalInfo.phone) {
-      optimized.personalInfo.phone = '+1 (555) 432-8765';
-      issuesFixedCount += 1;
-    }
-
-    // Convert optimized resume to text to calculate new ATS score
-    const compiledText = [
-      optimized.personalInfo.fullName,
-      optimized.personalInfo.targetRole,
-      optimized.personalInfo.email,
-      optimized.personalInfo.phone,
-      optimized.personalInfo.location,
-      'PROFESSIONAL SUMMARY',
-      optimized.summary,
-      'CORE SKILLS',
-      optimized.skills.join(', '),
-      'PROFESSIONAL EXPERIENCE',
-      ...optimized.experiences.flatMap(e => [
-        `${e.role} | ${e.company} | ${e.startDate} - ${e.endDate}`,
-        ...e.bullets.map(b => `• ${b}`)
-      ]),
-      'EDUCATION',
-      ...optimized.education.map(ed => `${ed.degree} in ${ed.field} - ${ed.school} (${ed.graduationYear})`),
-      'CERTIFICATIONS',
-      ...optimized.certifications
-    ].join('\n');
-
-    const newAnalysis = analyzeResume(compiledText, domainKey);
-
     return {
-      optimizedData: optimized,
-      compiledText,
-      analysis: newAnalysis,
-      issuesFixedCount: Math.max(4, issuesFixedCount),
-      domain: domainKey,
-      domainLabel: domainConfig.label
+      ...exp,
+      bullets: enhancedBullets
     };
-  } catch (error) {
-    logger.error('Error optimizing resume with AI', { error: error.message });
-    throw error;
-  }
+  });
+
+  const compiledText = [
+    optimized.personalInfo?.fullName || '',
+    optimized.personalInfo?.targetRole || '',
+    optimized.personalInfo?.email || '',
+    optimized.personalInfo?.phone || '',
+    optimized.personalInfo?.location || '',
+    'PROFESSIONAL SUMMARY',
+    optimized.summary || '',
+    'CORE SKILLS',
+    (optimized.skills || []).join(', '),
+    'PROFESSIONAL EXPERIENCE',
+    ...(optimized.experiences || []).flatMap(e => [
+      `${e.role} | ${e.company} | ${e.startDate} - ${e.endDate}`,
+      ...(e.bullets || []).map(b => `• ${b}`)
+    ]),
+    'EDUCATION',
+    ...(optimized.education || []).map(ed => `${ed.degree} in ${ed.field} - ${ed.school} (${ed.graduationYear})`),
+    'CERTIFICATIONS',
+    ...(optimized.certifications || [])
+  ].filter(Boolean).join('\n');
+
+  const analysis = analyzeResume(compiledText, domainKey);
+
+  return {
+    optimizedData: optimized,
+    compiledText,
+    analysis,
+    issuesFixedCount: Math.max(3, issuesFixedCount)
+  };
 }
+
+
 
 function matchJob(resumeText = '', jobText = '') {
   try {
@@ -611,3 +724,4 @@ module.exports = {
   optimizeResumeWithAI,
   matchJob
 };
+
