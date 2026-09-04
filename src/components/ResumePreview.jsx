@@ -20,12 +20,64 @@ export default function ResumePreview({ resumeData }) {
   const { personalInfo = {}, summary = '', skills = [], experiences = [], projects = [], education = [], certifications = [] } = resumeData
   const activeColor = COLOR_THEMES[colorTheme] || COLOR_THEMES.blue
 
-  // Isolated Print/PDF Download: Guarantees ONLY the resume document is downloaded, not the app UI
-  const handleDownloadPDF = () => {
+  // 1-Click Direct PDF Download without any browser headers, footers, URLs, or trademarks
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
+
+  const handleDownloadPDF = async () => {
     const resumeEl = document.getElementById('ats-resume-document')
     if (!resumeEl) return
 
-    // Create a hidden, isolated iframe
+    const candidateName = personalInfo.fullName || 'Candidate'
+    const cleanFileName = `${candidateName.trim().replace(/[^a-zA-Z0-9_-]/g, '_')}_ATS_Resume`
+
+    setIsGeneratingPdf(true)
+
+    try {
+      // Dynamically load html2pdf if not already present
+      if (!window.html2pdf) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'
+          script.onload = resolve
+          script.onerror = reject
+          document.head.appendChild(script)
+        })
+      }
+
+      // Clone clean resume element without 3D perspective or shadows
+      const clone = resumeEl.cloneNode(true)
+      clone.style.boxShadow = 'none'
+      clone.style.border = 'none'
+      clone.style.transform = 'none'
+      clone.style.margin = '0'
+      clone.style.padding = '12mm 15mm'
+      clone.style.width = '100%'
+      clone.style.maxWidth = '800px'
+      clone.style.background = '#ffffff'
+      clone.style.color = '#0f172a'
+
+      const opt = {
+        margin: [0, 0, 0, 0],
+        filename: `${cleanFileName}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+      }
+
+      await window.html2pdf().set(opt).from(clone).save()
+    } catch (err) {
+      console.warn('Direct PDF generator failed, falling back to clean isolated print:', err)
+      handlePrintClean()
+    } finally {
+      setIsGeneratingPdf(false)
+    }
+  }
+
+  // Fallback Clean Print: Guarantees zero browser headers, zero footers, and NO URL printed at bottom
+  const handlePrintClean = () => {
+    const resumeEl = document.getElementById('ats-resume-document')
+    if (!resumeEl) return
+
     const iframe = document.createElement('iframe')
     iframe.style.position = 'fixed'
     iframe.style.right = '0'
@@ -41,7 +93,6 @@ export default function ResumePreview({ resumeData }) {
     const cleanFileName = `${candidateName.trim().replace(/[^a-zA-Z0-9_-]/g, '_')}_ATS_Resume`
     doc.title = cleanFileName
 
-    // Extract styles from the parent page
     const headContent = Array.from(document.head.querySelectorAll('link[rel="stylesheet"], style'))
       .map(el => el.outerHTML)
       .join('\n')
@@ -56,9 +107,10 @@ export default function ResumePreview({ resumeData }) {
           <title>${cleanFileName}</title>
           ${headContent}
           <style>
+            /* ZERO MARGIN suppresses browser header (date/title) and footer (URL, page) completely */
             @page {
               size: letter portrait;
-              margin: 10mm 12mm;
+              margin: 0mm !important;
             }
             * {
               -webkit-print-color-adjust: exact !important;
@@ -77,8 +129,8 @@ export default function ResumePreview({ resumeData }) {
               max-width: 100% !important;
               box-shadow: none !important;
               border: none !important;
-              padding: 0 !important;
-              margin: 0 !important;
+              padding: 12mm 16mm !important;
+              margin: 0 auto !important;
               transform: none !important;
               min-height: auto !important;
               background: #ffffff !important;
@@ -98,7 +150,6 @@ export default function ResumePreview({ resumeData }) {
     `)
     doc.close()
 
-    // Trigger isolated print to save as PDF
     iframe.contentWindow.focus()
     setTimeout(() => {
       iframe.contentWindow.print()
@@ -251,11 +302,21 @@ export default function ResumePreview({ resumeData }) {
 
           <button
             onClick={handleDownloadPDF}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/25 transition transform hover:scale-[1.02] active:scale-95"
-            title="Saves ONLY the clean resume document as a PDF"
+            disabled={isGeneratingPdf}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/25 transition transform hover:scale-[1.02] active:scale-95 disabled:opacity-60"
+            title="Directly downloads clean PDF with zero headers, zero footers, and no URLs"
           >
-            <Printer className="w-3.5 h-3.5" />
-            Download ATS PDF
+            {isGeneratingPdf ? (
+              <>
+                <span className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                Generating Clean PDF...
+              </>
+            ) : (
+              <>
+                <Printer className="w-3.5 h-3.5" />
+                Download Clean ATS PDF
+              </>
+            )}
           </button>
         </div>
       </div>
