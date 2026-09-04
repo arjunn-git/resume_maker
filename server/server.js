@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -86,6 +87,17 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api', resumeRoutes);
 app.use('/api', jobRoutes);
+
+// Serve built static frontend if dist exists
+const distPath = path.join(__dirname, '../dist');
+app.use(express.static(distPath));
+app.use('/resume_maker', express.static(distPath));
+app.get(['/', '/resume_maker', '/resume_maker/*'], (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+    return next();
+  }
+  res.sendFile(path.join(distPath, 'index.html'));
+});
 
 // 404 handler
 app.use(notFound);
