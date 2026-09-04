@@ -127,45 +127,38 @@ resume_maker/
 
 ---
 
-## 🚀 Quick Start & Local Development
+## 📖 How to Use ATS Studio 3D (User Guide)
 
-### Prerequisites
-* **Node.js**: v18.0.0 or higher
-* **npm**: v9.0.0 or higher
+### 1. Upload & Instant Laser Scan
+* **Drag and Drop**: Drop your existing resume (PDF or TXT) into the holographic dropzone, or click **Browse** to select a file from your computer or phone.
+* **1-Click Domain Presets**: Alternatively, explore pre-loaded multi-domain sample resumes (Healthcare, Tech, B2B Sales, Finance, Growth Marketing, etc.) to immediately experience the studio.
+* **Spatial Privacy Parsing**: The Mozilla PDF.js engine extracts your work experience, skills, education, and contact details entirely inside your browser memory with **100% client-side privacy**.
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/arjunn-git/resume_maker.git
-cd resume_maker
-```
+### 2. Evaluate Your 4-Pillar ATS Diagnostic Score
+* Inspect your real-time **ATS Score Gauge (0–100%)** broken down into:
+  * **Keywords & Domain Competency**
+  * **Impact & Quantifiable Metrics**
+  * **Structural Completeness**
+  * **Readability & Formatting Safety**
+* Review the **Critical Blockers**, **Tips**, and **Passed Checks** audit cards to eliminate automated screening risks before applying.
 
-### 2. Install Dependencies
-```bash
-npm install
-```
+### 3. Elevate with STAR AI Bullet Rewriting
+* Navigate through the **Experience**, **Projects**, **Skills**, **Education**, and **Summary** editor tabs.
+* Click **🪄 AI Rewrite (STAR)** on any bullet point to automatically transform passive duties into the Google XYZ formula:
+  * *Accomplished [X], as measured by [Y], by doing [Z]*
+* Click **📈 Add Metric** to inject verifiable KPI templates (percentages, revenue, efficiency turnarounds).
+* Click **⚡ Fix All Issues and Boost Score** to resolve all detected ATS blockers with a single action.
 
-### 3. Launch Local Development Server
-```bash
-npm run dev
-```
-Open [http://localhost:5173/resume_maker/](http://localhost:5173/resume_maker/) in your browser. The development server supports Hot Module Replacement (HMR).
+### 4. Tailor to Target Job Descriptions
+* Switch to the **🎯 Job Tailor** tab and paste any target job description.
+* Review your instant match percentage, matched qualifications, and missing keyword gaps.
+* Click **⚡ One-Click Tailor Resume** to automatically synthesize missing competencies directly into your resume profile.
 
-### 4. Build for Production
-```bash
-npm run build
-```
-Compiled production-ready assets will be generated in the `dist/` directory.
-
----
-
-## 🌐 Deployment & Continuous Delivery
-
-The repository is pre-configured with a zero-downtime GitHub Actions workflow (`.github/workflows/deploy-gh-pages.yml`):
-
-1. **Trigger**: Any push to the `main` branch automatically triggers the pipeline.
-2. **Environment**: Runs on `ubuntu-latest` with Node.js 20.
-3. **Build Step**: Executes `npm ci` followed by `npm run build`.
-4. **Deploy**: Uploads the production artifact and deploys directly to GitHub Pages.
+### 5. Export 100% ATS-Compliant PDF or Word Document
+* Choose your preferred executive layout: **Modern ATS**, **Classic Executive**, **Clean Minimal**, or **One-Page Compact**.
+* Select from 5 executive color themes (Royal Blue, Charcoal Minimal, Deep Indigo, Emerald Green, Crimson Executive).
+* Click **Download PDF** for a pristine, watermark-free document engineered for automated ATS parsers.
+* Click **Download Word (.doc)** or **Copy Plain Text** for direct online application portal pasting.
 
 ---
 
