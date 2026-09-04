@@ -4,8 +4,10 @@ export function getTheme() {
   if (typeof window === 'undefined') return 'dark'
   const saved = localStorage.getItem('theme')
   if (saved === 'dark' || saved === 'light') return saved
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  // Dark mode is strictly preferred first
+  return 'dark'
 }
+
 
 export function setTheme(theme) {
   if (typeof document === 'undefined') return
