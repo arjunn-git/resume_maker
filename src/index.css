@@ -12,12 +12,24 @@
   .backface-hidden {
     backface-visibility: hidden;
   }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+  .dark .glass-card {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
 }
 
 @keyframes laserSweep {
   0% {
     top: 0%;
-    opacity: 0.8;
+    opacity: 0.9;
   }
   50% {
     top: 96%;
@@ -25,12 +37,12 @@
   }
   100% {
     top: 0%;
-    opacity: 0.8;
+    opacity: 0.9;
   }
 }
 
 .animate-laser-sweep {
-  animation: laserSweep 2.2s ease-in-out infinite;
+  animation: laserSweep 2s ease-in-out infinite;
 }
 
 @keyframes spinSlow {
@@ -46,20 +58,59 @@
   animation: spinSlow 6s linear infinite;
 }
 
+@keyframes floatOrb {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -40px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+}
+
+.animate-float-orb-1 {
+  animation: floatOrb 12s ease-in-out infinite;
+}
+
+.animate-float-orb-2 {
+  animation: floatOrb 16s ease-in-out infinite reverse;
+}
+
+.animate-float-orb-3 {
+  animation: floatOrb 20s ease-in-out infinite 3s;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
 /* Custom modern scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
+  background: linear-gradient(180deg, #6366F1, #3B82F6);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.7);
+  background: linear-gradient(180deg, #4F46E5, #2563EB);
 }
 
 /* Print Rules: Optimize for Clean ATS PDF Generation */

@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Sparkles, Plus, Trash2, TrendingUp, Lightbulb, Briefcase, GraduationCap, Award, Wrench, User, FileText } from 'lucide-react'
+import { Sparkles, Plus, Trash2, TrendingUp, Lightbulb, Briefcase, GraduationCap, Award, Wrench, User, FileText, FolderGit2 } from 'lucide-react'
 import { DOMAIN_DEFINITIONS } from '../utils/analysis'
 
 export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onScanRole, isOptimizing }) {
   const [activeTab, setActiveTab] = useState('experience')
   const [customSkill, setCustomSkill] = useState('')
+  const [customCert, setCustomCert] = useState('')
 
   if (!resumeData) return null
 
@@ -24,10 +25,11 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
     }
   }
 
+  // --- Experience Handlers ---
   const addExperience = () => {
     const newExp = {
       id: `exp-${Date.now()}`,
-      company: 'Company Name',
+      company: 'Enterprise Organization',
       role: `Senior ${resumeData.personalInfo.targetRole || 'Specialist'}`,
       location: 'Remote / On-site',
       startDate: '2022',
@@ -40,30 +42,30 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
     }
     onChange({
       ...resumeData,
-      experiences: [newExp, ...resumeData.experiences]
+      experiences: [newExp, ...(resumeData.experiences || [])]
     })
   }
 
   const updateExperience = (id, field, value) => {
-    const updated = resumeData.experiences.map(exp => exp.id === id ? { ...exp, [field]: value } : exp)
+    const updated = (resumeData.experiences || []).map(exp => exp.id === id ? { ...exp, [field]: value } : exp)
     onChange({ ...resumeData, experiences: updated })
   }
 
   const removeExperience = (id) => {
     onChange({
       ...resumeData,
-      experiences: resumeData.experiences.filter(exp => exp.id !== id)
+      experiences: (resumeData.experiences || []).filter(exp => exp.id !== id)
     })
   }
 
   const addBullet = (expId) => {
     const defaultVerb = domainConfig.actionVerbs[Math.floor(Math.random() * domainConfig.actionVerbs.length)] || 'Orchestrated'
     const defaultMetric = domainConfig.metricTemplates[Math.floor(Math.random() * domainConfig.metricTemplates.length)] || 'improving efficiency by 25%'
-    const updated = resumeData.experiences.map(exp => {
+    const updated = (resumeData.experiences || []).map(exp => {
       if (exp.id === expId) {
         return {
           ...exp,
-          bullets: [...exp.bullets, `${defaultVerb} targeted initiatives aligning with organizational priorities, ${defaultMetric}.`]
+          bullets: [...(exp.bullets || []), `${defaultVerb} targeted initiatives aligning with organizational priorities, ${defaultMetric}.`]
         }
       }
       return exp
@@ -72,9 +74,9 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
   }
 
   const updateBullet = (expId, bulletIdx, value) => {
-    const updated = resumeData.experiences.map(exp => {
+    const updated = (resumeData.experiences || []).map(exp => {
       if (exp.id === expId) {
-        const newBullets = [...exp.bullets]
+        const newBullets = [...(exp.bullets || [])]
         newBullets[bulletIdx] = value
         return { ...exp, bullets: newBullets }
       }
@@ -84,9 +86,9 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
   }
 
   const removeBullet = (expId, bulletIdx) => {
-    const updated = resumeData.experiences.map(exp => {
+    const updated = (resumeData.experiences || []).map(exp => {
       if (exp.id === expId) {
-        return { ...exp, bullets: exp.bullets.filter((_, i) => i !== bulletIdx) }
+        return { ...exp, bullets: (exp.bullets || []).filter((_, i) => i !== bulletIdx) }
       }
       return exp
     })
@@ -94,7 +96,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
   }
 
   const aiRewriteBullet = (expId, bulletIdx) => {
-    const currentBullet = resumeData.experiences.find(e => e.id === expId)?.bullets[bulletIdx] || ''
+    const currentBullet = (resumeData.experiences || []).find(e => e.id === expId)?.bullets?.[bulletIdx] || ''
     const verb = domainConfig.actionVerbs[Math.floor(Math.random() * domainConfig.actionVerbs.length)] || 'Spearheaded'
     const metric = domainConfig.metricTemplates[Math.floor(Math.random() * domainConfig.metricTemplates.length)] || 'reducing costs by 28%'
     const cleaned = currentBullet.replace(/^(responsible for|helped with|worked on|assisted in|did)\s+/i, '')
@@ -103,18 +105,84 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
   }
 
   const aiAddMetricToBullet = (expId, bulletIdx) => {
-    const currentBullet = resumeData.experiences.find(e => e.id === expId)?.bullets[bulletIdx] || ''
+    const currentBullet = (resumeData.experiences || []).find(e => e.id === expId)?.bullets?.[bulletIdx] || ''
     const metric = domainConfig.metricTemplates[Math.floor(Math.random() * domainConfig.metricTemplates.length)] || 'boosting performance metrics by 35%'
     const trimmed = currentBullet.replace(/[.\s]+$/, '')
     updateBullet(expId, bulletIdx, `${trimmed}, ${metric}.`)
   }
 
-  const addSkill = (skillName) => {
-    const trimmed = skillName.trim()
-    if (!trimmed || resumeData.skills.includes(trimmed)) return
+  // --- Projects Handlers ---
+  const addProject = () => {
+    const newProj = {
+      id: `proj-${Date.now()}`,
+      name: 'Featured Web Application / Project',
+      tech: 'React, Node.js, Tailwind CSS',
+      date: '2024',
+      bullets: [
+        'Architected modern high-performance application featuring responsive design and real-time state synchronization.',
+        'Integrated secure RESTful APIs to handle client-side data operations with sub-second response times.'
+      ]
+    }
     onChange({
       ...resumeData,
-      skills: [...resumeData.skills, trimmed]
+      projects: [...(resumeData.projects || []), newProj]
+    })
+  }
+
+  const updateProject = (id, field, value) => {
+    const updated = (resumeData.projects || []).map(proj => proj.id === id ? { ...proj, [field]: value } : proj)
+    onChange({ ...resumeData, projects: updated })
+  }
+
+  const removeProject = (id) => {
+    onChange({
+      ...resumeData,
+      projects: (resumeData.projects || []).filter(proj => proj.id !== id)
+    })
+  }
+
+  const addProjectBullet = (projId) => {
+    const updated = (resumeData.projects || []).map(proj => {
+      if (proj.id === projId) {
+        return {
+          ...proj,
+          bullets: [...(proj.bullets || []), 'Engineered responsive interface workflows, boosting user engagement by 35%.']
+        }
+      }
+      return proj
+    })
+    onChange({ ...resumeData, projects: updated })
+  }
+
+  const updateProjectBullet = (projId, bIdx, val) => {
+    const updated = (resumeData.projects || []).map(proj => {
+      if (proj.id === projId) {
+        const nb = [...(proj.bullets || [])]
+        nb[bIdx] = val
+        return { ...proj, bullets: nb }
+      }
+      return proj
+    })
+    onChange({ ...resumeData, projects: updated })
+  }
+
+  const removeProjectBullet = (projId, bIdx) => {
+    const updated = (resumeData.projects || []).map(proj => {
+      if (proj.id === projId) {
+        return { ...proj, bullets: (proj.bullets || []).filter((_, i) => i !== bIdx) }
+      }
+      return proj
+    })
+    onChange({ ...resumeData, projects: updated })
+  }
+
+  // --- Skills Handlers ---
+  const addSkill = (skillName) => {
+    const trimmed = skillName.trim()
+    if (!trimmed || (resumeData.skills || []).includes(trimmed)) return
+    onChange({
+      ...resumeData,
+      skills: [...(resumeData.skills || []), trimmed]
     })
     setCustomSkill('')
   }
@@ -122,33 +190,53 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
   const removeSkill = (skillToRemove) => {
     onChange({
       ...resumeData,
-      skills: resumeData.skills.filter(s => s !== skillToRemove)
+      skills: (resumeData.skills || []).filter(s => s !== skillToRemove)
     })
   }
 
   const suggestDomainSkills = () => {
-    const missing = domainConfig.skills.filter(s => !resumeData.skills.includes(s)).slice(0, 4)
+    const missing = domainConfig.skills.filter(s => !(resumeData.skills || []).includes(s)).slice(0, 4)
     if (missing.length > 0) {
       onChange({
         ...resumeData,
-        skills: Array.from(new Set([...resumeData.skills, ...missing]))
+        skills: Array.from(new Set([...(resumeData.skills || []), ...missing]))
       })
     }
   }
 
   const aiEnhanceSummary = () => {
     const role = resumeData.personalInfo.targetRole || `${domainConfig.label} Specialist`
-    const topSkills = resumeData.skills.slice(0, 4).join(', ') || domainConfig.skills.slice(0, 3).join(', ')
-    const enhanced = `Accomplished ${role} with 5+ years of demonstrable success in ${topSkills}. Proven track record of leveraging industry best practices to accelerate operational outcomes, surpass organizational KPIs, and lead high-impact cross-functional initiatives. Recognized for analytical rigor and strategic execution.`
+    const topSkills = (resumeData.skills || []).slice(0, 4).join(', ') || domainConfig.skills.slice(0, 3).join(', ')
+    const enhanced = `Accomplished ${role} with demonstrable track record in ${topSkills}. Proven success leveraging modern best practices to accelerate operational outcomes, surpass organizational KPIs, and lead high-impact cross-functional initiatives. Recognized for analytical rigor, rapid adaptation, and consistent execution.`
     updateField('summary', 'summary', enhanced)
+  }
+
+  // --- Certifications Handlers ---
+  const addCertification = (certStr) => {
+    const trimmed = certStr.trim()
+    if (!trimmed || (resumeData.certifications || []).includes(trimmed)) return
+    onChange({
+      ...resumeData,
+      certifications: [...(resumeData.certifications || []), trimmed]
+    })
+    setCustomCert('')
+  }
+
+  const removeCertification = (certStr) => {
+    onChange({
+      ...resumeData,
+      certifications: (resumeData.certifications || []).filter(c => c !== certStr)
+    })
   }
 
   const tabs = [
     { id: 'experience', label: 'Experience', icon: Briefcase },
+    { id: 'projects', label: 'Projects', icon: FolderGit2 },
     { id: 'skills', label: 'Skills & Domain', icon: Wrench },
     { id: 'summary', label: 'Summary', icon: FileText },
     { id: 'contact', label: 'Personal Info', icon: User },
-    { id: 'education', label: 'Education', icon: GraduationCap }
+    { id: 'education', label: 'Education', icon: GraduationCap },
+    { id: 'certifications', label: 'Certifications', icon: Award }
   ]
 
   return (
@@ -174,6 +262,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
         </button>
       </div>
 
+      {/* Tabs bar */}
       <div className="flex border-b border-slate-200 dark:border-slate-800 px-3 bg-slate-50/70 dark:bg-slate-950/40 overflow-x-auto">
         {tabs.map(tab => {
           const Icon = tab.icon
@@ -182,7 +271,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 transition-all whitespace-nowrap ${
+              className={`flex items-center gap-2 px-3.5 py-3 text-xs font-semibold border-b-2 transition-all whitespace-nowrap ${
                 isActive
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-slate-900/60'
                   : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -196,12 +285,13 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
       </div>
 
       <div className="flex-1 overflow-y-auto p-5 space-y-6">
+        {/* TAB 1: WORK EXPERIENCE */}
         {activeTab === 'experience' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">Work Experience Roles</h3>
-                <p className="text-xs text-slate-500">ATS algorithms look for quantifiable metrics and strong action verbs.</p>
+                <p className="text-xs text-slate-500">Target action power verbs and quantifiable impact metrics.</p>
               </div>
               <button
                 onClick={addExperience}
@@ -212,7 +302,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
               </button>
             </div>
 
-            {resumeData.experiences.map((exp, expIdx) => (
+            {(resumeData.experiences || []).map((exp, expIdx) => (
               <div
                 key={exp.id || expIdx}
                 className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 space-y-3"
@@ -249,16 +339,14 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                       className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   <div>
                     <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Start Date</label>
                     <input
                       type="text"
                       value={exp.startDate}
                       onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="e.g. 2021 or Jan 2021"
+                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
                     />
                   </div>
                   <div>
@@ -267,66 +355,53 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                       type="text"
                       value={exp.endDate}
                       onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Location</label>
-                    <input
-                      type="text"
-                      value={exp.location || 'Remote'}
-                      onChange={(e) => updateExperience(exp.id, 'location', e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="e.g. Present or 2023"
+                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2 pt-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                      Accomplishment Bullet Points ({exp.bullets.length})
-                    </span>
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Bullet Points</span>
                     <button
                       onClick={() => addBullet(exp.id)}
-                      className="text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                      className="flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700"
                     >
                       <Plus className="w-3 h-3" /> Add Bullet
                     </button>
                   </div>
 
-                  {exp.bullets.map((bullet, bIdx) => (
-                    <div key={bIdx} className="space-y-1 p-2 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
-                      <div className="flex items-start gap-2">
-                        <span className="text-blue-500 font-bold mt-1 text-xs">•</span>
-                        <textarea
-                          rows={2}
-                          value={bullet}
-                          onChange={(e) => updateBullet(exp.id, bIdx, e.target.value)}
-                          className="flex-1 text-xs p-2 rounded border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/60 focus:outline-none focus:ring-1 focus:ring-blue-500 leading-relaxed"
-                        />
-                        <button
-                          onClick={() => removeBullet(exp.id, bIdx)}
-                          className="text-slate-400 hover:text-red-500 p-1 transition"
-                          title="Delete bullet"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-1.5 pt-1 pl-4">
+                  {(exp.bullets || []).map((bullet, bIdx) => (
+                    <div key={bIdx} className="flex items-start gap-2 group">
+                      <span className="text-xs text-slate-400 mt-2">•</span>
+                      <textarea
+                        rows={2}
+                        value={bullet}
+                        onChange={(e) => updateBullet(exp.id, bIdx, e.target.value)}
+                        className="flex-1 text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"
+                      />
+                      <div className="flex flex-col gap-1 shrink-0 pt-1">
                         <button
                           onClick={() => aiRewriteBullet(exp.id, bIdx)}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 hover:bg-indigo-100 transition"
+                          title="AI STAR Rewrite"
+                          className="p-1 rounded bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300 hover:bg-indigo-100 transition"
                         >
-                          <Sparkles className="w-2.5 h-2.5" />
-                          AI Rewrite (STAR)
+                          <Sparkles className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => aiAddMetricToBullet(exp.id, bIdx)}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 hover:bg-emerald-100 transition"
+                          title="Add Metric / KPI"
+                          className="p-1 rounded bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300 hover:bg-amber-100 transition"
                         >
-                          <TrendingUp className="w-2.5 h-2.5" />
-                          Add Metric
+                          <TrendingUp className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => removeBullet(exp.id, bIdx)}
+                          title="Delete Bullet"
+                          className="p-1 rounded text-slate-300 hover:text-red-500 transition"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
@@ -337,16 +412,123 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
           </div>
         )}
 
-        {activeTab === 'skills' && (
+        {/* TAB 2: PROJECTS & PORTFOLIO */}
+        {activeTab === 'projects' && (
           <div className="space-y-6">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Target Domain & Competencies</h3>
-              <p className="text-xs text-slate-500">Universal calibration adapts to any industry or role.</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Featured Projects & Portfolio</h3>
+                <p className="text-xs text-slate-500">Critical for tech, creative, engineering, and student profiles.</p>
+              </div>
+              <button
+                onClick={addProject}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-100 transition"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Project
+              </button>
             </div>
 
-            <div className="p-4 rounded-2xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/60 dark:border-blue-800/60 space-y-3">
-              <label className="block text-xs font-bold text-blue-900 dark:text-blue-300">
-                Active Industry Domain
+            {(!resumeData.projects || resumeData.projects.length === 0) ? (
+              <div className="p-8 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 space-y-2">
+                <FolderGit2 className="w-8 h-8 text-slate-400 mx-auto" />
+                <p className="text-xs font-medium text-slate-600 dark:text-slate-400">No projects added yet.</p>
+                <button
+                  onClick={addProject}
+                  className="px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-sm hover:bg-blue-500 transition"
+                >
+                  + Add First Project
+                </button>
+              </div>
+            ) : (
+              (resumeData.projects || []).map((proj, pIdx) => (
+                <div key={proj.id || pIdx} className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                      Project #{pIdx + 1}
+                    </span>
+                    <button
+                      onClick={() => removeProject(proj.id)}
+                      className="p-1 rounded text-slate-400 hover:text-red-500 transition"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Project Name</label>
+                      <input
+                        type="text"
+                        value={proj.name}
+                        onChange={(e) => updateProject(proj.id, 'name', e.target.value)}
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Date / Year</label>
+                      <input
+                        type="text"
+                        value={proj.date}
+                        onChange={(e) => updateProject(proj.id, 'date', e.target.value)}
+                        placeholder="e.g. 2024"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Technologies / Tools Used</label>
+                    <input
+                      type="text"
+                      value={proj.tech}
+                      onChange={(e) => updateProject(proj.id, 'tech', e.target.value)}
+                      placeholder="e.g. React.js, Tailwind CSS, REST APIs"
+                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Project Accomplishments</span>
+                      <button
+                        onClick={() => addProjectBullet(proj.id)}
+                        className="flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-700"
+                      >
+                        <Plus className="w-3 h-3" /> Add Detail
+                      </button>
+                    </div>
+
+                    {(proj.bullets || []).map((b, bIdx) => (
+                      <div key={bIdx} className="flex items-start gap-2">
+                        <span className="text-xs text-slate-400 mt-2">•</span>
+                        <input
+                          type="text"
+                          value={b}
+                          onChange={(e) => updateProjectBullet(proj.id, bIdx, e.target.value)}
+                          className="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                        />
+                        <button
+                          onClick={() => removeProjectBullet(proj.id, bIdx)}
+                          className="p-1.5 rounded text-slate-300 hover:text-red-500 transition"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* TAB 3: SKILLS & DOMAIN */}
+        {activeTab === 'skills' && (
+          <div className="space-y-6">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                Target Domain & Profession
               </label>
               <select
                 value={resumeData.domain || 'technical'}
@@ -366,21 +548,21 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Skills Matrix ({resumeData.skills.length})
+                  Skills Matrix ({(resumeData.skills || []).length})
                 </label>
                 <button
                   onClick={suggestDomainSkills}
-                  className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300 hover:bg-indigo-100 transition"
+                  className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300 hover:bg-indigo-100 transition"
                 >
                   <Lightbulb className="w-3.5 h-3.5" />
-                  Suggest High-Yield Skills
+                  Suggest Domain Competencies
                 </button>
               </div>
 
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Type a skill and hit Add (e.g. Python, GAAP, Patient Care)..."
+                  placeholder="Type a skill and hit Add (e.g. Next.js, Figma, HIPAA, Financial Modeling)..."
                   value={customSkill}
                   onChange={(e) => setCustomSkill(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill(customSkill))}
@@ -395,7 +577,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
               </div>
 
               <div className="flex flex-wrap gap-2 pt-2">
-                {resumeData.skills.map((skill) => (
+                {(resumeData.skills || []).map((skill) => (
                   <span
                     key={skill}
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 group hover:border-blue-400 transition"
@@ -414,6 +596,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
           </div>
         )}
 
+        {/* TAB 4: SUMMARY */}
         {activeTab === 'summary' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -440,11 +623,12 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
           </div>
         )}
 
+        {/* TAB 5: PERSONAL INFO */}
         {activeTab === 'contact' && (
           <div className="space-y-4">
             <div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">Contact & Header Information</h3>
-              <p className="text-xs text-slate-500">Complete headers ensure ATS parser bots accurately index your profile.</p>
+              <p className="text-xs text-slate-500">Clear headers ensure ATS parser bots accurately index your profile.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -494,16 +678,18 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                   type="text"
                   value={resumeData.personalInfo.location}
                   onChange={(e) => updateField('personalInfo', 'location', e.target.value)}
+                  placeholder="e.g. Gurugram, India or San Francisco, CA"
                   className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">LinkedIn / Portfolio URL</label>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">LinkedIn URL</label>
                 <input
                   type="text"
                   value={resumeData.personalInfo.linkedin}
                   onChange={(e) => updateField('personalInfo', 'linkedin', e.target.value)}
+                  placeholder="https://linkedin.com/in/username"
                   className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
                 />
               </div>
@@ -511,6 +697,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
           </div>
         )}
 
+        {/* TAB 6: EDUCATION */}
         {activeTab === 'education' && (
           <div className="space-y-4">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">Education & Credentials</h3>
@@ -562,6 +749,47 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* TAB 7: CERTIFICATIONS */}
+        {activeTab === 'certifications' && (
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Certifications & Accreditations</h3>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="e.g. AWS Certified Solutions Architect, Meta Certified Front-End Developer..."
+                value={customCert}
+                onChange={(e) => setCustomCert(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCertification(customCert))}
+                className="flex-1 text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+              />
+              <button
+                onClick={() => addCertification(customCert)}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-500 transition"
+              >
+                Add Certification
+              </button>
+            </div>
+
+            <div className="space-y-2 pt-2">
+              {(resumeData.certifications || []).map((cert, idx) => (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                    <Award className="w-4 h-4 text-yellow-500" />
+                    {cert}
+                  </span>
+                  <button
+                    onClick={() => removeCertification(cert)}
+                    className="text-slate-400 hover:text-red-500 transition text-xs font-bold"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

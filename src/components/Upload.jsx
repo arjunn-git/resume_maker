@@ -144,6 +144,60 @@ EDUCATION
 Bachelor of Arts in Communications & Digital Media | UCLA (2018)
 Google Analytics 4 & Google Ads Certified (2022)
 `
+  },
+  creative: {
+    label: '🎨 UI/UX & Web Designer',
+    domain: 'creative',
+    text: `Arjun Taneja
+Frontend & Web Designer
+arjuntaneja204@gmail.com | +91 8950914728 | Gurugram, India | linkedin.com/in/arjuntaneja66137a272
+
+PROFESSIONAL PROFILE
+Creative and detail-oriented Frontend Web Designer with demonstrable success in creating responsive, accessible web interfaces, component design systems, and converting Figma designs into clean web apps.
+
+CORE COMPETENCIES & TECHNICAL SKILLS
+HTML5 • CSS3 • JavaScript (ES6+) • React.js • Tailwind CSS • Figma • UI/UX Design • REST API Integration • Git • Responsive Design • Agile/Scrum
+
+PROJECTS
+Smart Portfolio & Resume Studio | React.js, Tailwind CSS | 2024
+• Built interactive 3D web application with real-time dynamic scoring and responsive design.
+• Integrated REST APIs for dynamic role customization and optimized page load speeds by 40%.
+
+E-Commerce Web Portal | React, Node.js, MySQL | 2023
+• Designed user-centric product catalog and responsive checkout interface.
+• Decreased cart abandonment rate by 22% through clean user-experience design.
+
+EDUCATION
+Bachelor of Computer Applications (BCA) in St Andrews Inst. of Tech & Mgmt, Gurugram (2025)
+
+CERTIFICATIONS & ACCREDITATIONS
+Meta Certified Front-End Developer | Coursera
+`
+  },
+  education: {
+    label: '📚 Education & Academic Faculty',
+    domain: 'education',
+    text: `Dr. Elena Rostova
+Secondary STEM Educator & Curriculum Lead
+elena.rostova.edu@gmail.com | +1 (555) 789-0123 | Boston, MA | linkedin.com/in/elena-rostova-edu
+
+PROFESSIONAL SUMMARY
+Passionate STEM Educator with 6+ years experience designing inquiry-based curricula, integrating educational technology, and mentoring students in science and math. Proven record of boosting standardized test percentiles by 24%.
+
+CORE SKILLS
+Curriculum Design, Classroom Management, STEM Instruction, Differentiated Learning, Canvas LMS, Student Assessment, Interactive Lesson Planning, IEP Development
+
+PROFESSIONAL EXPERIENCE
+Lead Science Teacher | Westbridge Academy | 2021 - Present
+• Designed interactive physics and chemistry curriculum for 280+ high school students, raising AP pass rates by 22%.
+• Facilitated professional development workshops for 35 faculty members on active learning methodologies.
+
+Secondary Math Teacher | Boston Preparatory | 2018 - 2021
+• Delivered differentiated algebra and geometry lessons for diverse learning levels, achieving 96% annual course pass rate.
+
+EDUCATION
+Master of Education (M.Ed.) in Curriculum & Instruction | Boston University (2018)
+`
   }
 }
 
@@ -229,66 +283,91 @@ export default function Upload({ onUpload, onSelectSample, isScanning }) {
   })
 
   return (
-    <div className="space-y-6">
-      {/* 3D Animated Holographic Dropzone */}
-      <TiltCard3D maxTilt={7}>
-        <div
-          {...getRootProps()}
-          className={`cursor-pointer relative p-10 text-center rounded-3xl border-2 border-dashed transition-all duration-300 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-2xl ${
-            isDragActive
-              ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/40 scale-[1.01]'
-              : 'border-slate-300/80 dark:border-slate-700/80 hover:border-blue-500 hover:shadow-blue-500/10'
-          }`}
-        >
-          <input {...getInputProps()} />
+    <div className="space-y-8">
+      {/* 3D Animated Holographic Dropzone with Glowing Aura Border */}
+      <TiltCard3D maxTilt={6}>
+        <div className="relative group p-[2px] rounded-3xl bg-gradient-to-r from-cyan-500 via-indigo-500 to-fuchsia-500 shadow-2xl shadow-indigo-500/10 hover:shadow-indigo-500/25 transition-all duration-500">
+          <div
+            {...getRootProps()}
+            className={`cursor-pointer relative p-12 text-center rounded-[22px] transition-all duration-300 bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl ${
+              isDragActive
+                ? 'bg-cyan-50/70 dark:bg-indigo-950/60 scale-[1.005]'
+                : 'hover:bg-white dark:hover:bg-slate-900/90'
+            }`}
+          >
+            <input {...getInputProps()} />
 
-          <div className="mx-auto w-20 h-20 mb-4 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30 transform group-hover:scale-110 transition duration-300">
-            <UploadCloud className="w-10 h-10 animate-pulse" />
-          </div>
-
-          <h3 className="text-xl font-black text-slate-900 dark:text-white mb-1 tracking-tight">
-            {isDragActive ? 'Release to upload your resume...' : 'Drop your resume here to analyze'}
-          </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-4">
-            Supports PDF and TXT. Instant ATS parse, multi-domain diagnostics, and in-app dynamic editor.
-          </p>
-
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-            <Sparkles className="w-3.5 h-3.5 text-blue-500" />
-            Works with any profession, industry, or domain
-          </div>
-
-          {loading && (
-            <div className="mt-4 p-3 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 text-xs font-semibold animate-pulse">
-              Parsing resume contents into 3D studio...
+            {/* Glowing animated halo */}
+            <div className="relative mx-auto w-24 h-24 mb-5 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-fuchsia-500 opacity-75 blur-xl group-hover:opacity-100 group-hover:blur-2xl transition duration-500 animate-pulse-glow" />
+              <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-2xl shadow-indigo-500/40 transform group-hover:scale-110 group-hover:-rotate-3 transition duration-300">
+                <UploadCloud className="w-10 h-10 animate-pulse" />
+              </div>
             </div>
-          )}
+
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">
+              {isDragActive ? (
+                <span className="bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                  Release to Upload & Scan...
+                </span>
+              ) : (
+                'Drop your Resume here or Browse'
+              )}
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-5 leading-relaxed">
+              Accepts <strong className="text-slate-800 dark:text-slate-200">PDF</strong> or <strong className="text-slate-800 dark:text-slate-200">TXT</strong>. Instant Universal ATS diagnostics, deep STAR bullet rewriting, and real-time 3D Studio editor.
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-2 max-w-md mx-auto">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                <Sparkles className="w-3.5 h-3.5" />
+                Universal 8-Domain Engine
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                ⚡ 1-Click AI Tailoring
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                ✓ 100% Client-Side Privacy
+              </span>
+            </div>
+
+            {loading && (
+              <div className="mt-6 p-3.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 dark:text-indigo-300 text-xs font-bold animate-pulse flex items-center justify-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
+                Parsing resume structure into 3D studio...
+              </div>
+            )}
+          </div>
         </div>
       </TiltCard3D>
 
       {/* Instant 1-Click Multi-Domain Demo Resumes */}
-      <div className="p-5 rounded-3xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            Or test immediately with a multi-domain sample:
-          </span>
-          <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400">
-            1-Click Load & Score
+      <div className="p-6 rounded-3xl bg-white/75 dark:bg-slate-900/75 backdrop-blur-xl border border-slate-200/80 dark:border-indigo-500/20 shadow-xl shadow-indigo-500/5 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+            <span className="text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+              Instant Multi-Domain Presets
+            </span>
+          </div>
+          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+            Click to Load & Live Test
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {Object.entries(SAMPLE_RESUMES).map(([key, item]) => (
             <button
               key={key}
               onClick={() => onSelectSample(item)}
-              className="p-3 rounded-2xl text-left border border-slate-200/70 dark:border-slate-700/60 bg-slate-50/70 dark:bg-slate-800/40 hover:bg-blue-50 hover:border-blue-400 dark:hover:bg-blue-950/40 dark:hover:border-blue-600 transition group transform hover:-translate-y-0.5 active:translate-y-0 shadow-sm"
+              className="p-3.5 rounded-2xl text-left border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60 hover:border-indigo-500/60 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/40 transition-all duration-200 group transform hover:-translate-y-1 active:translate-y-0 shadow-sm hover:shadow-lg hover:shadow-indigo-500/10"
             >
-              <div className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
+              <div className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">
                 {item.label}
               </div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
-                Load sample <ArrowRight className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition" />
+              <div className="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-1.5 flex items-center justify-between">
+                <span>Evaluate ATS</span>
+                <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-0.5 transition" />
               </div>
             </button>
           ))}
