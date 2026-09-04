@@ -1,90 +1,258 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import confetti from 'canvas-confetti'
 import Header from './components/Header'
 import Upload from './components/Upload'
 import Dashboard from './components/Dashboard'
-import Suggestions from './components/Suggestions'
+import ResumeEditor from './components/ResumeEditor'
+import ResumePreview from './components/ResumePreview'
 import JobMatch from './components/JobMatch'
-import { analyzeResume } from './utils/analysis'
+import Background3D from './components/3d/Background3D'
+import LaserScanner3D from './components/3d/LaserScanner3D'
+import { analyzeResume, parseResumeToStructured, optimizeResumeWithAI, compileResumeToText } from './utils/analysis'
 import { apiPath } from './utils/api'
 
-export default function App(){
-  const [resume, setResume] = useState(null)
+export default function App() {
+  const [resumeData, setResumeData] = useState(null)
   const [analysis, setAnalysis] = useState(null)
-  const [error, setError] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [baselineScore, setBaselineScore] = useState(null)
+  const [activeView, setActiveView] = useState('studio') // 'studio' | 'preview' | 'audit' | 'jobmatch'
+  const [isScanning, setIsScanning] = useState(false)
+  const [isOptimizing, setIsOptimizing] = useState(false)
+  const [scanMessage, setScanMessage] = useState('')
 
-  useEffect(()=>{
-    if(resume){
-      analyzeResumeAPI(resume.text || resume.name)
+  // Celebrate with 3D Confetti when reaching 90%+
+  const hasCelebrated = useRef(false)
+  useEffect(() => {
+    if (analysis && analysis.score >= 90 && !hasCelebrated.current) {
+      hasCelebrated.current = true
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 }
+      })
     }
-  },[resume])
+  }, [analysis?.score])
 
-  const analyzeResumeAPI = async (text) => {
-    setLoading(true)
-    setError(null)
+  // Handle uploaded or dropped resume
+  const handleUpload = (fileInfo) => {
+    setIsScanning(true)
+    setScanMessage('Laser Scanning & Parsing Resume...')
+
+    setTimeout(() => {
+      try {
+        const text = fileInfo.text || ''
+        const structured = parseResumeToStructured(text)
+        const initialAnalysis = analyzeResume(text, structured.domain)
+
+        setResumeData(structured)
+        setAnalysis(initialAnalysis)
+        setBaselineScore(initialAnalysis.score)
+        hasCelebrated.current = false
+      } catch (err) {
+        console.error('Parse error:', err)
+      } finally {
+        setIsScanning(false)
+      }
+    }, 900)
+  }
+
+  // Handle 1-click sample resume selection
+  const handleSelectSample = (sample) => {
+    setIsScanning(true)
+    setScanMessage(`Loading ${sample.label}...`)
+
+    setTimeout(() => {
+      const structured = parseResumeToStructured(sample.text, sample.domain)
+      const initialAnalysis = analyzeResume(sample.text, sample.domain)
+
+      setResumeData(structured)
+      setAnalysis(initialAnalysis)
+      setBaselineScore(initialAnalysis.score)
+      hasCelebrated.current = false
+      setIsScanning(false)
+    }, 700)
+  }
+
+  // Dynamic Live Re-Scoring on every keystroke/change in the editor
+  const handleEditorChange = (newResumeData) => {
+    setResumeData(newResumeData)
+    const compiledText = compileResumeToText(newResumeData)
+    const updatedAnalysis = analyzeResume(compiledText, newResumeData.domain)
+    setAnalysis(updatedAnalysis)
+  }
+
+  // Domain change trigger
+  const handleScanRole = (newDomain) => {
+    if (!resumeData) return
+    const compiledText = compileResumeToText(resumeData)
+    const updatedAnalysis = analyzeResume(compiledText, newDomain)
+    setAnalysis(updatedAnalysis)
+  }
+
+  // One-Click AI Automated Optimization
+  const handleAutoOptimize = async () => {
+    if (!resumeData) return
+    setIsOptimizing(true)
+    setIsScanning(true)
+    setScanMessage('AI Rewriting Bullets (STAR Formula) & Injecting Keywords...')
+
+    // Support both backend API call with instant client-side fallback
     try {
-      const response = await fetch(apiPath('/api/analyze-resume'), {
+      const response = await fetch(apiPath('/api/optimize-resume'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resumeData, preferredDomain: resumeData.domain })
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to analyze resume')
+      if (response.ok) {
+        const res = await response.json()
+        if (res.success && res.data?.optimizedData) {
+          setResumeData(res.data.optimizedData)
+          setAnalysis(res.data.analysis)
+          return
+        }
       }
-
-      const result = await response.json()
-      if (result.success) {
-        setAnalysis(result.data)
-        // Save to history
-        const hist = JSON.parse(localStorage.getItem('rm_history')||'[]')
-        hist.unshift({name: resume.name, at: Date.now(), score: result.data.score})
-        localStorage.setItem('rm_history', JSON.stringify(hist.slice(0,20)))
-      } else {
-        throw new Error(result.message || 'Analysis failed')
-      }
-    } catch (err) {
-      setError('Failed to analyze resume. Please try again.')
-      console.error(err)
+      throw new Error('Fallback to client optimizer')
+    } catch (e) {
+      // Client-side AI optimizer
+      setTimeout(() => {
+        const result = optimizeResumeWithAI(resumeData, resumeData.domain)
+        setResumeData(result.optimizedData)
+        setAnalysis(result.analysis)
+      }, 800)
     } finally {
-      setLoading(false)
+      setTimeout(() => {
+        setIsOptimizing(false)
+        setIsScanning(false)
+      }, 1000)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+      {/* 3D Ambient Constellation Canvas */}
+      <Background3D />
+
+      {/* Holographic Laser Scanner Overlay */}
+      <LaserScanner3D active={isScanning} label={scanMessage} />
+
+      {/* Header */}
       <Header />
-      <div className="max-w-5xl mx-auto px-6 pb-12 space-y-6">
-        <Upload onUpload={setResume} />
-        
-        {error && (
-          <div className="p-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded-lg">
-            {error}
+
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16 pt-6 space-y-6">
+        {/* Upload Zone / Domain Selector */}
+        {!resumeData && (
+          <div className="max-w-4xl mx-auto py-8">
+            <Upload
+              onUpload={handleUpload}
+              onSelectSample={handleSelectSample}
+              isScanning={isScanning}
+            />
           </div>
         )}
 
-        {loading && (
-          <div className="p-4 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-lg">
-            Analyzing your resume...
+        {/* Dynamic Studio Dashboard */}
+        {resumeData && analysis && (
+          <div className="space-y-6">
+            {/* View Mode Switcher */}
+            <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 shadow-sm print:hidden">
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setActiveView('studio')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'studio' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}`}
+                >
+                  ⚡ Live Resume Studio (Split-Pane)
+                </button>
+                <button
+                  onClick={() => setActiveView('preview')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'preview' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}`}
+                >
+                  📄 ATS Document Preview
+                </button>
+                <button
+                  onClick={() => setActiveView('audit')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'audit' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}`}
+                >
+                  🔍 ATS Score Breakdown ({analysis.score}%)
+                </button>
+                <button
+                  onClick={() => setActiveView('jobmatch')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'jobmatch' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}`}
+                >
+                  🎯 Job Match & Tailor
+                </button>
+              </div>
+
+              <button
+                onClick={() => {
+                  setResumeData(null)
+                  setAnalysis(null)
+                  setBaselineScore(null)
+                }}
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-red-500 transition"
+              >
+                Upload New Resume
+              </button>
+            </div>
+
+            {/* TAB: STUDIO (Split-Pane Editor + Live Document Preview + Live Score) */}
+            {activeView === 'studio' && (
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+                <div className="xl:col-span-7">
+                  <ResumeEditor
+                    resumeData={resumeData}
+                    onChange={handleEditorChange}
+                    onAutoOptimize={handleAutoOptimize}
+                    onScanRole={handleScanRole}
+                    isOptimizing={isOptimizing}
+                  />
+                </div>
+
+                <div className="xl:col-span-5 space-y-6">
+                  {/* Dashboard with 3D Gauge */}
+                  <Dashboard
+                    analysis={analysis}
+                    resumeData={resumeData}
+                    baselineScore={baselineScore}
+                    onAutoFixAll={handleAutoOptimize}
+                    isOptimizing={isOptimizing}
+                  />
+
+                  {/* Compact Live Document Preview */}
+                  <ResumePreview resumeData={resumeData} />
+                </div>
+              </div>
+            )}
+
+            {/* TAB: ATS PREVIEW */}
+            {activeView === 'preview' && (
+              <div className="max-w-4xl mx-auto">
+                <ResumePreview resumeData={resumeData} />
+              </div>
+            )}
+
+            {/* TAB: DETAILED DIAGNOSTICS */}
+            {activeView === 'audit' && (
+              <div className="max-w-5xl mx-auto">
+                <Dashboard
+                  analysis={analysis}
+                  resumeData={resumeData}
+                  baselineScore={baselineScore}
+                  onAutoFixAll={handleAutoOptimize}
+                  isOptimizing={isOptimizing}
+                />
+              </div>
+            )}
+
+            {/* TAB: TARGET JOB MATCH */}
+            {activeView === 'jobmatch' && (
+              <div className="max-w-4xl mx-auto">
+                <JobMatch resumeText={compileResumeToText(resumeData)} />
+              </div>
+            )}
           </div>
         )}
-        
-        {analysis && (
-          <>
-            <Dashboard analysis={analysis} resumeText={resume?.text || ''} />
-            <Suggestions suggestions={analysis.suggestions} />
-            <JobMatch resumeText={resume?.text} />
-          </>
-        )}
-        
-        {!resume && !analysis && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">Upload a resume to get started →</p>
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   )
 }

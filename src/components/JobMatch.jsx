@@ -1,5 +1,6 @@
 import React, {useState, memo} from 'react'
 import { apiPath } from '../utils/api'
+import { analyzeResume } from '../utils/analysis'
 
 export default memo(function JobMatch({resumeText=''}) {
   const [job, setJob] = useState('')
@@ -31,8 +32,19 @@ export default memo(function JobMatch({resumeText=''}) {
         alert('Failed to match job description')
       }
     } catch (error) {
-      console.error('Job matching error:', error)
-      alert('Error matching job description')
+      console.warn('Backend job match error, computing client-side match:', error)
+      const resumeAnalysis = analyzeResume(resumeText)
+      const jobAnalysis = analyzeResume(job)
+      const matched = jobAnalysis.skills.filter(s => resumeAnalysis.skills.includes(s))
+      const missing = jobAnalysis.skills.filter(s => !resumeAnalysis.skills.includes(s))
+      const percent = jobAnalysis.skills.length > 0 ? Math.round((matched.length / jobAnalysis.skills.length) * 100) : 70
+      setResult({
+        percent,
+        matchedSkills: matched,
+        missingSkills: missing,
+        suggestions: missing.length > 0 ? [`Add keywords: ${missing.slice(0, 3).join(', ')}`] : ['Strong match with this role!'],
+        roadmap: missing.map(s => ({ skill: s, steps: [`Learn ${s} through standard industry courses`, `Integrate ${s} into projects or resume bullets`] }))
+      })
     }
   }
 

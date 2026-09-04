@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
+    "canvas-confetti": "^1.9.4",
     "chart.js": "^4.3.0",
+    "lucide-react": "^1.40.0",
     "pdfjs-dist": "^3.9.179",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",

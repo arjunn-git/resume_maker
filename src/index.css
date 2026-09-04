@@ -2,28 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root { 
-  height: 100%; 
-}
-
-body { 
-  @apply bg-gray-50 text-gray-900;
-}
-
-html.dark body { 
-  @apply bg-gray-900 text-gray-100;
-}
-
-@layer components {
-  .card {
-    @apply p-6 border rounded-lg bg-white dark:bg-gray-800 shadow;
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
   }
-  
-  .btn-primary {
-    @apply px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition;
+  .preserve-3d {
+    transform-style: preserve-3d;
   }
-  
-  .skill-tag {
-    @apply px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full text-sm;
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}
+
+@keyframes laserSweep {
+  0% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 96%;
+    opacity: 1;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.8;
+  }
+}
+
+.animate-laser-sweep {
+  animation: laserSweep 2.2s ease-in-out infinite;
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 6s linear infinite;
+}
+
+/* Custom modern scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
+
+/* Print Rules: Optimize for Clean ATS PDF Generation */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  nav, header, button, .print\:hidden, canvas {
+    display: none !important;
+  }
+  #ats-resume-document {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
   }
 }
