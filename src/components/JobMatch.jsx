@@ -49,11 +49,11 @@ export default memo(function JobMatch({ resumeText = '', onApplyTailoring }) {
   }
 
   return (
-    <section className="p-6 border rounded-lg bg-white dark:bg-gray-800 shadow">
+    <section className="p-6 sm:p-8 rounded-3xl border border-slate-200/90 dark:border-indigo-500/20 bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl shadow-xl shadow-indigo-500/5 space-y-6">
       <h3 className="text-xl font-semibold mb-4">Job Match Analysis</h3>
       <div className="space-y-4">
         <textarea 
-          className="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+          className="w-full p-4 text-xs rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm transition" 
           rows={6} 
           value={job} 
           onChange={e=>setJob(e.target.value)} 
@@ -61,13 +61,13 @@ export default memo(function JobMatch({ resumeText = '', onApplyTailoring }) {
         />
         <button 
           onClick={run} 
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
+          className="px-5 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-95 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-500/20 transition transform active:scale-95"
         >
           Analyze Match
         </button>
         
         {result && (
-          <div className="mt-6 space-y-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="mt-6 space-y-4 p-5 rounded-2xl bg-slate-50/90 dark:bg-slate-950/40 border border-slate-200/90 dark:border-slate-800 shadow-inner">
             <div>
               <p className="text-gray-600 dark:text-gray-300 text-sm mb-1">Match Score</p>
               <div className="flex items-center gap-3">

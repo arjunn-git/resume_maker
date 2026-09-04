@@ -7,10 +7,22 @@
     <link rel="icon" type="image/svg+xml" href="/resume_maker/favicon.svg" />
     <meta name="theme-color" content="#0B0F19" />
     <meta name="description" content="Dynamic multi-domain ATS optimizer, real-time recalculation & 3D resume builder" />
-    <script type="module" crossorigin src="/resume_maker/assets/index-C_dDie0Y.js"></script>
-    <link rel="stylesheet" crossorigin href="/resume_maker/assets/index-CdKduARn.css">
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (saved === 'dark' || (!saved && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -286,7 +286,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
       </div>
 
       {/* Tabs bar */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 px-2 sm:px-3 bg-slate-50/70 dark:bg-slate-950/40 overflow-x-auto scrollbar-none touch-pan-x">
+      <div className="flex border-b border-slate-200/90 dark:border-slate-800 px-2 sm:px-3 bg-slate-50/70 dark:bg-slate-950/40 overflow-x-auto scrollbar-none touch-pan-x">
         {tabs.map(tab => {
           const Icon = tab.icon
           const isActive = activeTab === tab.id
@@ -328,7 +328,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
             {(resumeData.experiences || []).map((exp, expIdx) => (
               <div
                 key={exp.id || expIdx}
-                className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 space-y-3"
+                className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/30 space-y-3"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
@@ -350,7 +350,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                       type="text"
                       value={exp.role}
                       onChange={(e) => updateExperience(exp.id, 'role', e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
@@ -359,7 +359,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                       type="text"
                       value={exp.company}
                       onChange={(e) => updateExperience(exp.id, 'company', e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
@@ -369,7 +369,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                       value={exp.startDate}
                       onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
                       placeholder="e.g. 2021 or Jan 2021"
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                     />
                   </div>
                   <div>
@@ -379,7 +379,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                       value={exp.endDate}
                       onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
                       placeholder="e.g. Present or 2023"
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                     />
                   </div>
                 </div>
@@ -402,7 +402,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                         rows={2}
                         value={bullet}
                         onChange={(e) => updateBullet(exp.id, bIdx, e.target.value)}
-                        className="flex-1 text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"
+                        className="flex-1 text-xs p-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"
                       />
                       <div className="flex flex-col gap-1 shrink-0 pt-1">
                         <button
@@ -465,7 +465,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
               </div>
             ) : (
               (resumeData.projects || []).map((proj, pIdx) => (
-                <div key={proj.id || pIdx} className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 space-y-3">
+                <div key={proj.id || pIdx} className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/30 space-y-3">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                       Project #{pIdx + 1}
@@ -485,7 +485,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                         type="text"
                         value={proj.name}
                         onChange={(e) => updateProject(proj.id, 'name', e.target.value)}
-                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                       />
                     </div>
                     <div>
@@ -495,7 +495,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                         value={proj.date}
                         onChange={(e) => updateProject(proj.id, 'date', e.target.value)}
                         placeholder="e.g. 2024"
-                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                       />
                     </div>
                   </div>
@@ -508,7 +508,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                         value={proj.tech || ''}
                         onChange={(e) => updateProject(proj.id, 'tech', e.target.value)}
                         placeholder="e.g. React.js, Tailwind CSS, REST APIs"
-                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                       />
                     </div>
 
@@ -522,7 +522,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                         value={proj.link || ''}
                         onChange={(e) => updateProject(proj.id, 'link', e.target.value)}
                         placeholder="e.g. github.com/user/currency-converter or myproject.vercel.app"
-                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                       />
                     </div>
                   </div>
@@ -545,7 +545,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                           type="text"
                           value={b}
                           onChange={(e) => updateProjectBullet(proj.id, bIdx, e.target.value)}
-                          className="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                          className="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                         />
                         <button
                           onClick={() => removeProjectBullet(proj.id, bIdx)}
@@ -565,7 +565,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
         {/* TAB 3: SKILLS & DOMAIN */}
         {activeTab === 'skills' && (
           <div className="space-y-6">
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/90 dark:border-slate-700 space-y-2">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
                 Target Domain & Profession
               </label>
@@ -576,7 +576,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                   onChange({ ...resumeData, domain: newDomain })
                   onScanRole(newDomain)
                 }}
-                className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-medium"
+                className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 font-medium"
               >
                 {Object.entries(DOMAIN_DEFINITIONS).map(([key, def]) => (
                   <option key={key} value={key}>{def.label}</option>
@@ -605,7 +605,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                   value={customSkill}
                   onChange={(e) => setCustomSkill(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill(customSkill))}
-                  className="flex-1 text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 text-xs px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   onClick={() => addSkill(customSkill)}
@@ -619,7 +619,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                 {(resumeData.skills || []).map((skill) => (
                   <span
                     key={skill}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 group hover:border-blue-400 transition"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 group hover:border-blue-400 transition"
                   >
                     {skill}
                     <button
@@ -657,7 +657,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
               value={resumeData.summary}
               onChange={(e) => updateField('summary', 'summary', e.target.value)}
               placeholder="Enter your professional overview or click AI Enhance Summary..."
-              className="w-full text-xs p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"
+              className="w-full text-xs p-3 rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"
             />
           </div>
         )}
@@ -677,7 +677,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                   type="text"
                   value={resumeData.personalInfo.fullName}
                   onChange={(e) => updateField('personalInfo', 'fullName', e.target.value)}
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                 />
               </div>
 
@@ -687,7 +687,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                   type="text"
                   value={resumeData.personalInfo.targetRole}
                   onChange={(e) => updateField('personalInfo', 'targetRole', e.target.value)}
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                 />
               </div>
 
@@ -697,7 +697,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                   type="email"
                   value={resumeData.personalInfo.email}
                   onChange={(e) => updateField('personalInfo', 'email', e.target.value)}
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                 />
               </div>
 
@@ -707,7 +707,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                   type="text"
                   value={resumeData.personalInfo.phone}
                   onChange={(e) => updateField('personalInfo', 'phone', e.target.value)}
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                 />
               </div>
 
@@ -718,7 +718,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                   value={resumeData.personalInfo.location}
                   onChange={(e) => updateField('personalInfo', 'location', e.target.value)}
                   placeholder="e.g. Gurugram, India or San Francisco, CA"
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                 />
               </div>
 
@@ -729,7 +729,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                   value={resumeData.personalInfo.linkedin}
                   onChange={(e) => updateField('personalInfo', 'linkedin', e.target.value)}
                   placeholder="https://linkedin.com/in/username"
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
                 />
               </div>
             </div>
@@ -754,7 +754,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
             </div>
 
             {(resumeData.education || []).length === 0 ? (
-              <div className="p-8 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+              <div className="p-8 text-center rounded-2xl border border-dashed border-slate-200/90 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/50">
                 <GraduationCap className="w-8 h-8 mx-auto text-slate-400 mb-2 opacity-60" />
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">No education entries added yet.</p>
                 <button
@@ -767,7 +767,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
               </div>
             ) : (
               (resumeData.education || []).map((edu, idx) => (
-                <div key={idx} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 bg-white dark:bg-slate-900/50 shadow-sm relative group">
+                <div key={idx} className="p-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 space-y-3 bg-white dark:bg-slate-900/50 shadow-sm relative group">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
                     <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
                       Education #{idx + 1}
@@ -793,7 +793,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                           onChange({ ...resumeData, education: updated })
                         }}
                         placeholder="e.g. St Andrews Inst. of Tech & Mgmt"
-                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                       />
                     </div>
 
@@ -808,7 +808,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                           onChange({ ...resumeData, education: updated })
                         }}
                         placeholder="e.g. Bachelor of Computer Applications (BCA)"
-                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                       />
                     </div>
 
@@ -823,7 +823,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                           onChange({ ...resumeData, education: updated })
                         }}
                         placeholder="e.g. 2025"
-                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                       />
                     </div>
 
@@ -838,7 +838,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                           onChange({ ...resumeData, education: updated })
                         }}
                         placeholder="e.g. CGPA: 7.5 or Computer Science"
-                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                       />
                     </div>
                   </div>
@@ -860,7 +860,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                 value={customCert}
                 onChange={(e) => setCustomCert(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCertification(customCert))}
-                className="flex-1 text-xs px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                className="flex-1 text-xs px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800"
               />
               <button
                 onClick={() => addCertification(customCert)}
@@ -872,7 +872,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
 
             <div className="space-y-2 pt-2">
               {(resumeData.certifications || []).map((cert, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">
+                <div key={idx} className="flex items-center justify-between p-3 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">
                   <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                     <Award className="w-4 h-4 text-yellow-500" />
                     {cert}
