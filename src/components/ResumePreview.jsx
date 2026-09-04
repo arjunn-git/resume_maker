@@ -322,13 +322,13 @@ export default function ResumePreview({ resumeData }) {
       </div>
 
       {/* Rendered Resume Document */}
-      <div className={view3D ? 'perspective-[1200px] py-4' : ''}>
+      <div className={`w-full overflow-x-auto ${view3D ? 'perspective-[1200px] py-4' : ''}`}>
         <div
           id="ats-resume-document"
-          className={`mx-auto max-w-[820px] bg-white text-slate-900 p-8 sm:p-12 shadow-2xl rounded-sm transition-all duration-300 print:shadow-none print:p-0 print:m-0 ${
+          className={`mx-auto max-w-[820px] w-full bg-white text-slate-900 p-4 sm:p-8 md:p-12 shadow-2xl rounded-sm transition-all duration-300 print:shadow-none print:p-0 print:m-0 ${
             view3D ? 'rotate-x-[8deg] rotate-y-[-4deg] shadow-[0_30px_60px_rgba(0,0,0,0.18)] ring-1 ring-slate-900/5' : ''
-          } ${template === 'executive' ? 'font-serif' : 'font-sans'} ${template === 'compact' ? 'space-y-4 text-xs' : 'space-y-6'}`}
-          style={{ minHeight: '1050px' }}
+          } ${template === 'executive' ? 'font-serif' : 'font-sans'} ${template === 'compact' ? 'space-y-3 sm:space-y-4 text-xs' : 'space-y-4 sm:space-y-6'}`}
+          style={{ minHeight: '650px' }}
         >
           {/* Header */}
           <div className={`${template === 'minimal' ? 'border-b border-slate-200 pb-3' : 'border-b-2 border-slate-900 pb-4'}`}>
