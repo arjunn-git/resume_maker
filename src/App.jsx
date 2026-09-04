@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard'
 import ResumeEditor from './components/ResumeEditor'
 import ResumePreview from './components/ResumePreview'
 import JobMatch from './components/JobMatch'
+import SeoContentSection from './components/SeoContentSection'
 import Background3D from './components/3d/Background3D'
 import LaserScanner3D from './components/3d/LaserScanner3D'
 import { analyzeResume, parseResumeToStructured, optimizeResumeWithAI, compileResumeToText } from './utils/analysis'
@@ -163,14 +164,16 @@ export default function App() {
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16 pt-6 space-y-6">
         {/* Upload Zone / Domain Selector */}
         {!resumeData && (
-          <div className="max-w-4xl mx-auto py-8">
+          <div className="max-w-4xl mx-auto py-8 space-y-12">
             <Upload
               onUpload={handleUpload}
               onSelectSample={handleSelectSample}
               isScanning={isScanning}
             />
+            <SeoContentSection />
           </div>
         )}
+
 
         {/* Dynamic Studio Dashboard */}
         {resumeData && analysis && (
