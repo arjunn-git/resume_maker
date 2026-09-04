@@ -1,19 +1,21 @@
-// Theme helper for ATS Studio 3D
+// Theme helper for ATS Studio 3D - Default is ALWAYS Dark Mode
 
 export function getTheme() {
   if (typeof window === 'undefined') return 'dark'
-  const saved = localStorage.getItem('theme')
-  if (saved === 'dark' || saved === 'light') return saved
-  // Dark mode is strictly preferred first
+  try {
+    const session = sessionStorage.getItem('theme')
+    if (session === 'light' || session === 'dark') return session
+  } catch (e) {}
+  // Default when app opens: ALWAYS Dark Mode
   return 'dark'
 }
-
 
 export function setTheme(theme) {
   if (typeof document === 'undefined') return
   const isDark = theme === 'dark'
   document.documentElement.classList.toggle('dark', isDark)
   try {
+    sessionStorage.setItem('theme', theme)
     localStorage.setItem('theme', theme)
   } catch (e) {
     console.warn('Unable to persist theme:', e)
