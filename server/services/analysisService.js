@@ -326,7 +326,7 @@ function compileResumeToText(resumeData) {
     ]),
     (resumeData.projects && resumeData.projects.length > 0) ? 'FEATURED PROJECTS' : '',
     ...(resumeData.projects || []).flatMap(p => [
-      `${p.name} | ${p.tech || ''} (${p.date || ''})`,
+      `${p.name} | ${p.tech || ''}${p.link ? ` | Link: ${p.link}` : ''} (${p.date || ''})`,
       ...(p.bullets || []).map(b => `• ${b}`)
     ]),
     (resumeData.education && resumeData.education.length > 0) ? 'EDUCATION' : '',
@@ -567,16 +567,23 @@ function parseResumeToStructured(text = '', preferredDomain = null, fileName = '
       const projTech = titleParts[1] || '';
       const projDate = titleParts[2] || (titleLine.match(/\b(20\d\d)\b/)?.[1] || '');
 
+      let projLink = '';
+      const linkMatch = block.match(/(?:https?:\/\/|github\.com\/|bitbucket\.org\/|gitlab\.com\/|www\.)[^\s\)]+/i);
+      if (linkMatch) {
+        projLink = linkMatch[0].replace(/[.,;)]$/, '');
+      }
+
       const projBullets = [];
       for (let j = 1; j < lines.length; j++) {
         const b = lines[j].replace(/^[•\-\*·>]\s*/, '').trim();
-        if (b.length >= 10) projBullets.push(b);
+        if (b.length >= 10 && !b.startsWith(projLink)) projBullets.push(b);
       }
 
       projects.push({
         id: `proj-${Date.now()}-${i}`,
         name: projName,
         tech: projTech,
+        link: projLink,
         date: projDate,
         bullets: projBullets.length > 0 ? projBullets : [
           `Designed and implemented end-to-end functionality utilizing ${projTech || detectedSkills[0] || 'modern frameworks'}.`

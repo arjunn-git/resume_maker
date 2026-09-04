@@ -117,6 +117,7 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
       id: `proj-${Date.now()}`,
       name: 'Featured Web Application / Project',
       tech: 'React, Node.js, Tailwind CSS',
+      link: '',
       date: '2024',
       bullets: [
         'Architected modern high-performance application featuring responsive design and real-time state synchronization.',
@@ -499,15 +500,31 @@ export default function ResumeEditor({ resumeData, onChange, onAutoOptimize, onS
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Technologies / Tools Used</label>
-                    <input
-                      type="text"
-                      value={proj.tech}
-                      onChange={(e) => updateProject(proj.id, 'tech', e.target.value)}
-                      placeholder="e.g. React.js, Tailwind CSS, REST APIs"
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Technologies / Tools Used</label>
+                      <input
+                        type="text"
+                        value={proj.tech || ''}
+                        onChange={(e) => updateProject(proj.id, 'tech', e.target.value)}
+                        placeholder="e.g. React.js, Tailwind CSS, REST APIs"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 flex items-center justify-between">
+                        <span>Project Link / Demo / GitHub URL (Optional)</span>
+                        <span className="text-[10px] text-indigo-500 font-bold">Clickable in PDF</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={proj.link || ''}
+                        onChange={(e) => updateProject(proj.id, 'link', e.target.value)}
+                        placeholder="e.g. github.com/user/currency-converter or myproject.vercel.app"
+                        className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2 pt-1">

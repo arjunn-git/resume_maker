@@ -215,7 +215,7 @@ export default function ResumePreview({ resumeData }) {
       ]),
       projects.length > 0 ? '\nFEATURED PROJECTS' : '',
       ...projects.flatMap(p => [
-        `${p.name} | ${p.tech || ''} (${p.date || ''})`,
+        `${p.name} | ${p.tech || ''}${p.link ? ` | Link: ${p.link}` : ''} (${p.date || ''})`,
         ...(p.bullets || []).map(b => `• ${b}`)
       ]),
       education.length > 0 ? '\nEDUCATION' : '',
@@ -422,11 +422,28 @@ export default function ResumePreview({ resumeData }) {
                 {projects.map((proj, pIdx) => (
                   <div key={pIdx} className="space-y-1">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <span className="text-xs font-bold text-slate-950">
-                        {proj.name} {proj.tech ? <span className="font-medium text-slate-600">| {proj.tech}</span> : null}
-                      </span>
+                      <div className="flex flex-wrap items-baseline gap-1.5">
+                        <span className="text-xs font-bold text-slate-950">
+                          {proj.name}
+                        </span>
+                        {proj.tech ? (
+                          <span className="text-xs font-medium text-slate-600">
+                            | {proj.tech}
+                          </span>
+                        ) : null}
+                        {proj.link ? (
+                          <a
+                            href={proj.link.startsWith('http') ? proj.link : `https://${proj.link}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] font-semibold text-blue-600 dark:text-blue-500 hover:underline inline-flex items-center gap-0.5 print:text-blue-700"
+                          >
+                            <span>| ↗ {proj.link.replace(/^https?:\/\//, '')}</span>
+                          </a>
+                        ) : null}
+                      </div>
                       {proj.date ? (
-                        <span className="text-[11px] font-semibold text-slate-500">
+                        <span className="text-[11px] font-semibold text-slate-500 shrink-0">
                           {proj.date}
                         </span>
                       ) : null}
