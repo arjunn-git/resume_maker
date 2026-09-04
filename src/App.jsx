@@ -172,29 +172,45 @@ export default function App() {
         {resumeData && analysis && (
           <div className="space-y-6">
             {/* View Mode Switcher */}
-            <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 shadow-sm print:hidden">
-              <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-slate-200/80 dark:border-indigo-500/20 shadow-xl shadow-indigo-500/5 print:hidden">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <button
                   onClick={() => setActiveView('studio')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'studio' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}`}
+                  className={`px-4 py-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                    activeView === 'studio'
+                      ? 'bg-gradient-to-r from-cyan-500 via-indigo-600 to-fuchsia-600 text-white shadow-md shadow-indigo-500/30 scale-[1.02]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
+                  }`}
                 >
-                  ⚡ Live Resume Studio (Split-Pane)
+                  ⚡ Live 3D Studio (Split-Pane)
                 </button>
                 <button
                   onClick={() => setActiveView('preview')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'preview' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}`}
+                  className={`px-4 py-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                    activeView === 'preview'
+                      ? 'bg-gradient-to-r from-cyan-500 via-indigo-600 to-fuchsia-600 text-white shadow-md shadow-indigo-500/30 scale-[1.02]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
+                  }`}
                 >
                   📄 ATS Document Preview
                 </button>
                 <button
                   onClick={() => setActiveView('audit')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'audit' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}`}
+                  className={`px-4 py-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                    activeView === 'audit'
+                      ? 'bg-gradient-to-r from-cyan-500 via-indigo-600 to-fuchsia-600 text-white shadow-md shadow-indigo-500/30 scale-[1.02]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
+                  }`}
                 >
                   🔍 ATS Score Breakdown ({analysis.score}%)
                 </button>
                 <button
                   onClick={() => setActiveView('jobmatch')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'jobmatch' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}`}
+                  className={`px-4 py-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                    activeView === 'jobmatch'
+                      ? 'bg-gradient-to-r from-cyan-500 via-indigo-600 to-fuchsia-600 text-white shadow-md shadow-indigo-500/30 scale-[1.02]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
+                  }`}
                 >
                   🎯 Job Match & Tailor
                 </button>
@@ -206,7 +222,7 @@ export default function App() {
                   setAnalysis(null)
                   setBaselineScore(null)
                 }}
-                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-red-500 transition"
+                className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400 hover:bg-rose-50/50 dark:hover:bg-rose-950/30 transition border border-transparent hover:border-rose-500/20"
               >
                 Upload New Resume
               </button>
