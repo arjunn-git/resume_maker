@@ -172,11 +172,38 @@ export default function Upload({ onUpload, onSelectSample, isScanning }) {
         for (let i = 1; i <= numPages; i += 1) {
           const page = await pdf.getPage(i)
           const content = await page.getTextContent()
-          const pageText = content.items.map(item => item.str).join(' ')
+
+          // Sort items by Y descending (top to bottom), then X ascending (left to right)
+          const items = (content.items || []).slice().sort((a, b) => {
+            const yA = a.transform ? a.transform[5] : 0
+            const yB = b.transform ? b.transform[5] : 0
+            if (Math.abs(yA - yB) > 4) return yB - yA
+            const xA = a.transform ? a.transform[4] : 0
+            const xB = b.transform ? b.transform[4] : 0
+            return xA - xB
+          })
+
+          let pageText = ''
+          let lastY = null
+
+          for (const item of items) {
+            const currentY = item.transform ? item.transform[5] : null
+            if (lastY !== null && currentY !== null && Math.abs(currentY - lastY) > 4) {
+              pageText += '\n'
+            } else if (pageText.length > 0 && !pageText.endsWith('\n') && !pageText.endsWith(' ')) {
+              pageText += ' '
+            }
+            pageText += item.str || ''
+            if (item.hasEOL) {
+              pageText += '\n'
+            }
+            lastY = currentY
+          }
+
           pageTexts.push(pageText)
         }
 
-        text = pageTexts.join('\n')
+        text = pageTexts.join('\n\n')
       } else {
         text = await new Promise((resolve, reject) => {
           const reader = new FileReader()

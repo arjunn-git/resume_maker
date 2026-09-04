@@ -41,12 +41,12 @@ export default function AtsGauge3D({ score = 0, baselineScore = null, subscores 
   const delta = baselineScore !== null ? displayScore - baselineScore : null
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-6 bg-gradient-to-br from-white/90 via-slate-50/80 to-blue-50/40 dark:from-slate-900/90 dark:via-slate-800/80 dark:to-indigo-950/40 backdrop-blur-xl border border-white/40 dark:border-slate-700/50 rounded-3xl shadow-xl shadow-blue-500/5">
+    <div className="relative flex flex-col items-center justify-center p-5 bg-gradient-to-br from-white/95 via-slate-50/90 to-blue-50/50 dark:from-slate-900/95 dark:via-slate-800/90 dark:to-indigo-950/50 backdrop-blur-xl border border-slate-200/80 dark:border-slate-700/60 rounded-3xl shadow-xl shadow-blue-500/5 w-full">
       {delta !== null && (
-        <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+        <div className="flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 mb-1">
           <span className="text-slate-500 dark:text-slate-400">Baseline: {baselineScore}%</span>
-          <span>→</span>
-          <span className={delta >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-500'}>
+          <span className="text-slate-400">→</span>
+          <span className={delta >= 0 ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-amber-500'}>
             {delta >= 0 ? `+${delta}%` : `${delta}%`} Boost
           </span>
         </div>

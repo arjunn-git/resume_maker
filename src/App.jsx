@@ -216,6 +216,7 @@ export default function App() {
                     baselineScore={baselineScore}
                     onAutoFixAll={handleAutoOptimize}
                     isOptimizing={isOptimizing}
+                    compact={true}
                   />
 
                   {/* Compact Live Document Preview */}
