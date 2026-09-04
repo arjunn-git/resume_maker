@@ -10,10 +10,11 @@
     <script>
       (function() {
         try {
-          var saved = localStorage.getItem('theme');
-          if (saved === 'light') {
+          var sessionTheme = sessionStorage.getItem('theme');
+          if (sessionTheme === 'light') {
             document.documentElement.classList.remove('dark');
           } else {
+            // App ALWAYS opens in Dark Mode by default
             document.documentElement.classList.add('dark');
           }
         } catch (e) {
@@ -21,7 +22,8 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/resume_maker/assets/index-BdcdT-mR.js"></script>
+
+    <script type="module" crossorigin src="/resume_maker/assets/index-oGuBuXsS.js"></script>
     <link rel="stylesheet" crossorigin href="/resume_maker/assets/index-CZK3cgGA.css">
   </head>
   <body>
