@@ -20,8 +20,131 @@ export default function ResumePreview({ resumeData }) {
   const { personalInfo = {}, summary = '', skills = [], experiences = [], projects = [], education = [], certifications = [] } = resumeData
   const activeColor = COLOR_THEMES[colorTheme] || COLOR_THEMES.blue
 
-  const handlePrint = () => {
-    window.print()
+  // Isolated Print/PDF Download: Guarantees ONLY the resume document is downloaded, not the app UI
+  const handleDownloadPDF = () => {
+    const resumeEl = document.getElementById('ats-resume-document')
+    if (!resumeEl) return
+
+    // Create a hidden, isolated iframe
+    const iframe = document.createElement('iframe')
+    iframe.style.position = 'fixed'
+    iframe.style.right = '0'
+    iframe.style.bottom = '0'
+    iframe.style.width = '0'
+    iframe.style.height = '0'
+    iframe.style.border = '0'
+    iframe.style.visibility = 'hidden'
+    document.body.appendChild(iframe)
+
+    const doc = iframe.contentWindow.document
+    const candidateName = personalInfo.fullName || 'Candidate'
+    const cleanFileName = `${candidateName.trim().replace(/[^a-zA-Z0-9_-]/g, '_')}_ATS_Resume`
+    doc.title = cleanFileName
+
+    // Extract styles from the parent page
+    const headContent = Array.from(document.head.querySelectorAll('link[rel="stylesheet"], style'))
+      .map(el => el.outerHTML)
+      .join('\n')
+
+    doc.open()
+    doc.write(`
+      <!doctype html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>${cleanFileName}</title>
+          ${headContent}
+          <style>
+            @page {
+              size: letter portrait;
+              margin: 10mm 12mm;
+            }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              box-sizing: border-box !important;
+            }
+            html, body {
+              background: #ffffff !important;
+              color: #0f172a !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            }
+            #ats-resume-document {
+              width: 100% !important;
+              max-width: 100% !important;
+              box-shadow: none !important;
+              border: none !important;
+              padding: 0 !important;
+              margin: 0 !important;
+              transform: none !important;
+              min-height: auto !important;
+              background: #ffffff !important;
+            }
+            a {
+              text-decoration: none !important;
+              color: inherit !important;
+            }
+          </style>
+        </head>
+        <body>
+          <div id="ats-resume-document" class="${template === 'executive' ? 'font-serif' : 'font-sans'} ${template === 'compact' ? 'space-y-4 text-xs' : 'space-y-6'}">
+            ${resumeEl.innerHTML}
+          </div>
+        </body>
+      </html>
+    `)
+    doc.close()
+
+    // Trigger isolated print to save as PDF
+    iframe.contentWindow.focus()
+    setTimeout(() => {
+      iframe.contentWindow.print()
+      setTimeout(() => {
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe)
+        }
+      }, 2000)
+    }, 350)
+  }
+
+  // Direct Word (.doc) download with 100% ATS formatting
+  const handleDownloadWord = () => {
+    const resumeEl = document.getElementById('ats-resume-document')
+    if (!resumeEl) return
+    const candidateName = personalInfo.fullName || 'Candidate'
+    const cleanFileName = `${candidateName.trim().replace(/[^a-zA-Z0-9_-]/g, '_')}_ATS_Resume.doc`
+
+    const htmlContent = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>${cleanFileName}</title>
+        <style>
+          body { font-family: Calibri, Arial, sans-serif; font-size: 10.5pt; line-height: 1.35; color: #0f172a; margin: 1in; }
+          h1 { font-size: 20pt; font-weight: bold; margin-bottom: 2pt; text-transform: uppercase; color: #0f172a; }
+          h2 { font-size: 11pt; font-weight: bold; border-bottom: 1.5pt solid #334155; padding-bottom: 2pt; margin-top: 14pt; margin-bottom: 4pt; text-transform: uppercase; color: #1d4ed8; }
+          p { margin: 2pt 0; }
+          ul { margin: 3pt 0 6pt 18pt; padding: 0; }
+          li { margin-bottom: 2.5pt; }
+        </style>
+      </head>
+      <body>
+        ${resumeEl.innerHTML}
+      </body>
+      </html>
+    `
+    const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = cleanFileName
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 
   const handleCopyText = () => {
@@ -100,7 +223,7 @@ export default function ResumePreview({ resumeData }) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setView3D(!view3D)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${view3D ? 'bg-indigo-50 border-indigo-300 text-indigo-600 dark:bg-indigo-950/40 dark:border-indigo-700 dark:text-indigo-300' : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'}`}
@@ -118,11 +241,21 @@ export default function ResumePreview({ resumeData }) {
           </button>
 
           <button
-            onClick={handlePrint}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-500/20 transition"
+            onClick={handleDownloadWord}
+            title="Download formatted ATS Word Document (.doc)"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border border-blue-200 dark:border-blue-900 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 transition"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Word (.doc)
+          </button>
+
+          <button
+            onClick={handleDownloadPDF}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/25 transition transform hover:scale-[1.02] active:scale-95"
+            title="Saves ONLY the clean resume document as a PDF"
           >
             <Printer className="w-3.5 h-3.5" />
-            Download ATS PDF / Print
+            Download ATS PDF
           </button>
         </div>
       </div>
