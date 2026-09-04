@@ -10,8 +10,12 @@ import Background3D from './components/3d/Background3D'
 import LaserScanner3D from './components/3d/LaserScanner3D'
 import { analyzeResume, parseResumeToStructured, optimizeResumeWithAI, compileResumeToText } from './utils/analysis'
 import { apiPath } from './utils/api'
+import { initTheme } from './utils/theme'
 
 export default function App() {
+  useEffect(() => {
+    initTheme()
+  }, [])
   const [resumeData, setResumeData] = useState(null)
   const [analysis, setAnalysis] = useState(null)
   const [baselineScore, setBaselineScore] = useState(null)
@@ -146,7 +150,7 @@ export default function App() {
   }
 
   return (
-    <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+    <div className="relative min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
       {/* 3D Ambient Constellation Canvas */}
       <Background3D />
 

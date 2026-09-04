@@ -1,7 +1,17 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { getTheme } from '../../utils/theme'
 
 export default function Background3D() {
   const canvasRef = useRef(null)
+  const [isDark, setIsDark] = useState(() => getTheme() === 'dark')
+
+  useEffect(() => {
+    const handleThemeChange = (e) => {
+      setIsDark(e.detail?.isDark ?? (getTheme() === 'dark'))
+    }
+    window.addEventListener('themechange', handleThemeChange)
+    return () => window.removeEventListener('themechange', handleThemeChange)
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -32,7 +42,10 @@ export default function Background3D() {
     const particleCount = Math.min(85, Math.floor((width * height) / 14000))
     const particles = []
 
-    const neonPalette = ['#38BDF8', '#818CF8', '#C084FC', '#F472B6', '#34D399', '#60A5FA']
+    // Distinct palettes for dark and light modes
+    const darkPalette = ['#38BDF8', '#818CF8', '#C084FC', '#F472B6', '#34D399', '#60A5FA']
+    const lightPalette = ['#2563EB', '#4F46E5', '#7C3AED', '#DB2777', '#059669', '#0284C7']
+    const palette = isDark ? darkPalette : lightPalette
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
@@ -40,7 +53,7 @@ export default function Background3D() {
         y: (Math.random() - 0.5) * height * 1.6,
         z: Math.random() * 800 + 150,
         radius: Math.random() * 2.5 + 1.2,
-        color: neonPalette[i % neonPalette.length],
+        color: palette[i % palette.length],
         vx: (Math.random() - 0.5) * 0.5,
         vy: (Math.random() - 0.5) * 0.5,
         vz: (Math.random() - 0.5) * 0.9
@@ -84,13 +97,13 @@ export default function Background3D() {
         ctx.beginPath()
         ctx.arc(px, py, Math.max(1, pRadius * 1.6), 0, Math.PI * 2)
         ctx.fillStyle = p.color
-        ctx.globalAlpha = alpha * 0.35
+        ctx.globalAlpha = alpha * (isDark ? 0.35 : 0.25)
         ctx.fill()
 
         ctx.beginPath()
         ctx.arc(px, py, Math.max(0.8, pRadius), 0, Math.PI * 2)
         ctx.fillStyle = p.color
-        ctx.globalAlpha = alpha
+        ctx.globalAlpha = alpha * (isDark ? 1.0 : 0.85)
         ctx.fill()
       }
 
@@ -111,8 +124,8 @@ export default function Background3D() {
             ctx.moveTo(p1.x, p1.y)
             ctx.lineTo(p2.x, p2.y)
             ctx.strokeStyle = grad
-            ctx.globalAlpha = (1 - dist / 130) * 0.35
-            ctx.lineWidth = 1
+            ctx.globalAlpha = (1 - dist / 130) * (isDark ? 0.35 : 0.28)
+            ctx.lineWidth = isDark ? 1 : 1.2
             ctx.stroke()
           }
         }
@@ -129,21 +142,21 @@ export default function Background3D() {
       window.removeEventListener('resize', handleResize)
       cancelAnimationFrame(animationFrameId)
     }
-  }, [])
+  }, [isDark])
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
       {/* Dynamic atmospheric color glow orbs */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-gradient-to-tr from-blue-600/30 via-indigo-500/20 to-purple-600/30 blur-3xl animate-float-orb-1" />
-      <div className="absolute top-1/3 -right-32 w-[28rem] h-[28rem] rounded-full bg-gradient-to-br from-violet-600/25 via-fuchsia-500/20 to-pink-500/20 blur-3xl animate-float-orb-2" />
-      <div className="absolute -bottom-40 left-1/3 w-[32rem] h-[32rem] rounded-full bg-gradient-to-tr from-cyan-500/20 via-blue-600/20 to-emerald-500/20 blur-3xl animate-float-orb-3" />
+      <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-gradient-to-tr from-blue-300/35 via-indigo-200/30 to-purple-300/30 dark:from-blue-600/30 dark:via-indigo-500/20 dark:to-purple-600/30 blur-3xl animate-float-orb-1" />
+      <div className="absolute top-1/3 -right-32 w-[28rem] h-[28rem] rounded-full bg-gradient-to-br from-violet-300/30 via-fuchsia-200/25 to-pink-200/25 dark:from-violet-600/25 dark:via-fuchsia-500/20 dark:to-pink-500/20 blur-3xl animate-float-orb-2" />
+      <div className="absolute -bottom-40 left-1/3 w-[32rem] h-[32rem] rounded-full bg-gradient-to-tr from-cyan-300/25 via-blue-200/25 to-emerald-200/25 dark:from-cyan-500/20 dark:via-blue-600/20 dark:to-emerald-500/20 blur-3xl animate-float-orb-3" />
 
       {/* Cyber Grid Texture Overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.15] dark:opacity-[0.25]" />
+      <div className="absolute inset-0 bg-[radial-gradient(#4f46e5_1px,transparent_1px)] dark:bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.07] dark:opacity-[0.25]" />
 
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full opacity-60 dark:opacity-85 transition-opacity"
+        className="absolute inset-0 w-full h-full opacity-65 dark:opacity-85 transition-opacity duration-300"
       />
     </div>
   )
